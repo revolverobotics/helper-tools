@@ -2,6 +2,17 @@
 
 class HelperTools {
 
+    protected static $appName;
+
+    public function __construct()
+    {
+        self::$appName = strrchr(base_path(), '/');
+        if (self::$appName === false) {
+            self::$appName = strrchr(base_path(), '\\');
+        }
+        self::$appName = substr(self::$appName, 1);
+    }
+
     public static function debugLog($resource,$info)
     {
         if (getenv('APP_DEBUG') == true) {
@@ -35,7 +46,7 @@ class HelperTools {
 
         // Finally, if we're in debug mode, let us know about it.
         if (getenv('APP_DEBUG') == true) {
-            $responseData['kubi_frontend'] = 'debug';
+            $responseData[self::$appName] = 'debug';
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
         }
 
@@ -110,16 +121,8 @@ class HelperTools {
         // Clear header data
         unset($dataArray['headers']);
 
-        // We couldn't get the Guzzle/Promise sendAsync to work:
-        // It seems that this interface is for use within a loop, otherwise
-        // the synchronous sendAsync()->wait() method needs to be used.
-        //
-        // So instead:
-        //
-        // Let's do a manual cURL request and fork the process with exec():
-
         $auditData = http_build_query([
-            'from'	=> 'kubi-frontend',
+            'from'	=> self::$appName,
             'to'	=> $microservice,
             'data'	=> $dataArray,
             'status_code' => $parsedResponse['code'],
