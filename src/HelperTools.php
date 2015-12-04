@@ -1,10 +1,11 @@
 <?php namespace Revolverobotics\HelperTools;
 
 class HelperTools {
-    public static function debugLog($resourse,$info)
+
+    public static function debugLog($resource,$info)
     {
         if (getenv('APP_DEBUG') == true) {
-            \Log::info("[".$resourse."] ".$info);
+            \Log::info("[".$resource."] ".$info);
         }
     }
 
@@ -31,23 +32,6 @@ class HelperTools {
                 $responseData['statusCode'] = $code;
             }
         }
-
-        // Finally, if we're in debug mode, let us know about it.
-        if (getenv('APP_DEBUG') == true) {
-            $responseData['kubi_frontend'] = 'debug';
-            $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-        }
-
-        return response()->json($responseData, $code, array('Content-Type' => 'application/json'), JSON_PRETTY_PRINT);
-    }
-
-    // instead of our old prettyJson function, we'll rely on the backend server
-    // to provide all relevant status codes
-
-    public static function prettyJsonRedis($input=[])
-    {
-        $responseData = $input;
-        $code = $input['statusCode'];
 
         // Finally, if we're in debug mode, let us know about it.
         if (getenv('APP_DEBUG') == true) {
@@ -146,15 +130,6 @@ class HelperTools {
         self::forkCurl("POST", $auditData, "http://auditing.kubi-vpc" . $extension . "/internal");
 
         return $parsedResponse;
-    }
-
-    public static function getAccessTokenFromHeader($request)
-    {
-        $chunks = explode(" ", $request->header('Authorization'));
-        if (isset($chunks[1])) {
-            return $chunks[1];
-        }
-        return null;
     }
 
     public static function getAuthorizationHeader($request)
