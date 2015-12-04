@@ -54,7 +54,7 @@ class HelperTools {
     }
 
     // Helper to make Guzzle requests to other microservices
-    public static function sendRequest($method, $microservice, $url, $data)
+    public static function sendRequest($method, $microservice, $url, $data, $audit=1)
     {
         if (\App::environment() == 'local') {
             $extension = '.dev';
@@ -96,41 +96,42 @@ class HelperTools {
         $parsedResponse['json'] = json_decode($rawResponse->getBody(), true);
         $parsedResponse['code'] = $rawResponse->getStatusCode();
 
+        // For sending events to our auditing server to monitor and log
+        // communications between our microservices
+        if ($audit == 1) {
 
-        // NOTE: Now let's send an asynchronous request to our auditing server
-        // so we can keep track of internal microservice communications
+            if (strpos($url, 'admin/logs') !== false) { return $parsedResponse; } // if we're fetching logs from other servers, don't notify the auditing server
 
-        if (strpos($url, 'admin/logs') !== false) { return $parsedResponse; } // if we're fetching logs from other servers, don't notify the auditing server
+            // Get rid of any sensitive or unwanted information
+            $protectedData = ['password', 'password_confirmation', 'new_password', 'new_password_confirmation', 'secret', 'api_secret', 'client_secret'];
+            $responseData = $parsedResponse['json'];
 
-        // Get rid of any sensitive or unwanted information
-        $protectedData = ['password', 'password_confirmation', 'new_password', 'new_password_confirmation', 'secret', 'api_secret', 'client_secret'];
-        $responseData = $parsedResponse['json'];
-
-        foreach($protectedData as $sensitive) {
-            if (isset($dataArray['query']) && is_array($dataArray['query']) && array_key_exists($sensitive, $dataArray['query'])) {
-                unset($dataArray['query'][$sensitive]);
+            foreach($protectedData as $sensitive) {
+                if (isset($dataArray['query']) && is_array($dataArray['query']) && array_key_exists($sensitive, $dataArray['query'])) {
+                    unset($dataArray['query'][$sensitive]);
+                }
+                if (isset($dataArray['form_params']) && is_array($dataArray['form_params']) && array_key_exists($sensitive, $dataArray['form_params'])) {
+                    unset($dataArray['form_params'][$sensitive]);
+                }
+                if (isset($responseData) && is_array($responseData) && array_key_exists($sensitive, $responseData)) {
+                    unset($responseData[$sensitive]);
+                }
             }
-            if (isset($dataArray['form_params']) && is_array($dataArray['form_params']) && array_key_exists($sensitive, $dataArray['form_params'])) {
-                unset($dataArray['form_params'][$sensitive]);
-            }
-            if (isset($responseData) && is_array($responseData) && array_key_exists($sensitive, $responseData)) {
-                unset($responseData[$sensitive]);
-            }
+
+            // Clear header data
+            unset($dataArray['headers']);
+
+            $auditData = [
+                'from'	=> self::$appName,
+                'to'	=> $microservice,
+                'data'	=> $dataArray,
+                'status_code' => $parsedResponse['code'],
+                'response' => $responseData
+            ];
+
+            // Send an asynchronous request to our auditing server.
+            self::forkCurl("POST", $auditData, "http://auditing.kubi-vpc" . $extension . "/internal");
         }
-
-        // Clear header data
-        unset($dataArray['headers']);
-
-        $auditData = [
-            'from'	=> self::$appName,
-            'to'	=> $microservice,
-            'data'	=> $dataArray,
-            'status_code' => $parsedResponse['code'],
-            'response' => $responseData
-        ];
-
-        // Send an asynchronous request to our auditing server.
-        self::forkCurl("POST", $auditData, "http://auditing.kubi-vpc" . $extension . "/internal");
 
         return $parsedResponse;
     }
