@@ -1,0 +1,12 @@
+{
+    "name": "revolverobotics/helper-tools",
+    "description": "A Laravel package for useful helper functions across microservices and various apps.",
+    "authors": [
+        {
+            "name": "Tim",
+            "email": "tim@revolverobotics.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
