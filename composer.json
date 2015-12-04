@@ -1,12 +1,21 @@
 {
     "name": "revolverobotics/helper-tools",
     "description": "A Laravel package for useful helper functions across microservices and various apps.",
+    "license": "MIT",
     "authors": [
         {
-            "name": "Tim",
+            "name": "Timothy Huang",
             "email": "tim@revolverobotics.com"
         }
     ],
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Revolverobotics\\HelperTools\\": "src/"
+        }
+    },
     "minimum-stability": "dev",
-    "require": {}
+    "prefer-stable": true
 }
