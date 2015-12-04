@@ -121,13 +121,13 @@ class HelperTools {
         // Clear header data
         unset($dataArray['headers']);
 
-        $auditData = http_build_query([
+        $auditData = [
             'from'	=> self::$appName,
             'to'	=> $microservice,
             'data'	=> $dataArray,
             'status_code' => $parsedResponse['code'],
             'response' => $responseData
-        ]);
+        ];
 
         // Send an asynchronous request to our auditing server.
         self::forkCurl("POST", $auditData, "http://auditing.kubi-vpc" . $extension . "/internal");
