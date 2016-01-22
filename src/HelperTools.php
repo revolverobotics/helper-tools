@@ -66,6 +66,7 @@ class HelperTools {
             'kubi-service' => 'service.kubi-vpc'.$extension,
             'kubi-auditing' => 'auditing.kubi-vpc'.$extension,
             'kubi-users' => 'users.kubi-vpc'.$extension,
+            'kubi-video' => 'video.kubi-vpc'.$extension,
         ];
 
         $client = new \GuzzleHttp\Client();
