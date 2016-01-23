@@ -56,10 +56,16 @@ class HelperTools {
     // Helper to make Guzzle requests to other microservices
     public static function sendRequest($method, $microservice, $url, $data, $audit=1)
     {
-        if (\App::environment() == 'local') {
-            $extension = '.dev';
-        } else {
-            $extension = '.com';
+        switch(\App::environment) {
+            case "local":
+                $extension = '.dev';
+                break;
+            case "production":
+                $extension = '.com';
+                break;
+            default:
+                $extension = getenv('VPC_EXTENSION') ?: '.com';
+                break;
         }
 
         $microserviceArray = [
