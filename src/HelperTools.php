@@ -56,7 +56,7 @@ class HelperTools {
     // Helper to make Guzzle requests to other microservices
     public static function sendRequest($method, $microservice, $url, $data, $audit=1)
     {
-        switch(\App::environment) {
+        switch(\App::environment()) {
             case "local":
                 $extension = '.dev';
                 break;
