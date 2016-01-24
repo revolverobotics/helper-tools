@@ -47,6 +47,7 @@ class HelperTools {
         // Finally, if we're in debug mode, let us know about it.
         if (getenv('APP_DEBUG') == true) {
             $responseData[self::$appName] = 'debug';
+            $responseData['url'] = \Request::fullUrl();
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
         }
 
