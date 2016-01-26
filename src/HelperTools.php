@@ -33,11 +33,11 @@ class HelperTools {
             $currentString->value = [];
         }
 
-        if (gettype($input) == 'array')
+        if (is_array($input))
         {
             array_push($currentString->value, print_r($input, true));
         }
-        else if (gettype($input) == 'string')
+        else if (is_string($input))
         {
             array_push($currentString->value, $input);
         }
@@ -56,18 +56,28 @@ class HelperTools {
         $responseData = $input;
         $statusArray = [];
 
-        if (gettype($code) == 'array'){
-            // let's assume 200 OK if we're only passing data
+        /*
+            Check if we're passing data as the first parameter
+        */
+        if (is_array($code))
+        {
+            // Assume 200 OK if passing data
             $statusArray = ['statusCode' => 200];
             $responseData = $statusArray + $code;
             $code = 200;	// data has been assigned to responseData
                             // let's reassign $code to the status code
-        } else {
+        }
+        else if (is_integer($code))
+        {
             // otherwise, read the status code, and include data
             $statusArray = ['statusCode' => $code];
-            if (gettype($input) == 'array') {
+
+            if (is_array($input))
+            {
                 $responseData = $statusArray + $input;
-            } else {
+            }
+            else
+            {
                 $responseData = [];
                 $responseData['data'] = $input;
                 $responseData['statusCode'] = $code;
@@ -75,7 +85,8 @@ class HelperTools {
         }
 
         // Finally, if we're in debug mode, let us know about it.
-        if (getenv('APP_DEBUG') == true) {
+        if (getenv('APP_DEBUG') == true)
+        {
             $responseData[self::$appName] = 'debug';
             $responseData['url'] = \Request::fullUrl();
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
@@ -110,7 +121,8 @@ class HelperTools {
 
         // Sending application/x-www-for-urlencoded POST, PUT, & PATCH (non-GET) requests requires
         // `form_params` request options, instead of `query`
-        if ($method != 'GET') {
+        if ($method != 'GET')
+        {
             $data['form_params'] = $data['query'];
             unset($data['query']);
         }
@@ -177,7 +189,8 @@ class HelperTools {
     public static function getAuthorizationHeader($request)
     {
         $chunks = explode(" ", $request->header('Authorization'));
-        if (isset($chunks[1])) {
+        if (isset($chunks[1]))
+        {
             return $chunks[1];
         }
         return null;
