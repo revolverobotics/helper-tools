@@ -20,6 +20,10 @@ class HelperTools {
         }
     }
 
+    /*
+        Binds a singleton to the app to create your own
+        log trail, or a user-defined stack trace, if you will.
+    */
     public static function logTrail($input)
     {
         try
@@ -29,17 +33,14 @@ class HelperTools {
         catch (\Exception $e)
         {
             \App::singleton('logTrail', 'stdClass');
+
             $currentString = \App::make('logTrail');
-            $currentString->value = [];
+            $currentString->log = [];
         }
 
-        if (is_array($input))
+        if (is_array($input) || is_string($input))
         {
-            array_push($currentString->value, print_r($input, true));
-        }
-        else if (is_string($input))
-        {
-            array_push($currentString->value, $input);
+            array_push($currentString->log, $input);
         }
         else
         {
@@ -50,7 +51,6 @@ class HelperTools {
         }
     }
 
-    // Does what it says.
     public static function prettyJson($code=200, $input=[])
     {
         $responseData = $input;
@@ -85,10 +85,19 @@ class HelperTools {
         }
 
         // Finally, if we're in debug mode, let us know about it.
-        if (getenv('APP_DEBUG') == true)
-        {
+        if (getenv('APP_DEBUG') == true) {
             $responseData[self::$appName] = 'debug';
             $responseData['url'] = \Request::fullUrl();
+            try
+            {
+                $logTrail = app()->make('logTrail');
+                $responseData['log'] = $logTrail->log;
+            }
+            catch (\Exception $e)
+            {
+                // no trail
+            }
+            $responseData['SQL Queries'] = count(\DB::getQueryLog());
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
         }
 
