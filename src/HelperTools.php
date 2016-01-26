@@ -20,6 +20,36 @@ class HelperTools {
         }
     }
 
+    public static function logTrail($input)
+    {
+        try
+        {
+            $currentString = \App::make('logTrail');
+        }
+        catch (\Exception $e)
+        {
+            \App::singleton('logTrail', 'stdClass');
+            $currentString = \App::make('logTrail');
+            $currentString->value = [];
+        }
+
+        if (gettype($input) == 'array')
+        {
+            array_push($currentString->value, print_r($input, true));
+        }
+        else if (gettype($input) == 'string')
+        {
+            array_push($currentString->value, $input);
+        }
+        else
+        {
+            \Log::info('
+                Couldn\'t parse input sent to logTrail, defaulting
+                to log: ');
+            \Log::info($input);
+        }
+    }
+
     // Does what it says.
     public static function prettyJson($code=200, $input=[])
     {
