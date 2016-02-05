@@ -51,7 +51,7 @@ class HelperTools {
         }
     }
 
-    public static function prettyJson($code=200, $input=[])
+    public static function prettyJson($code=200, $input=[], $headers=[])
     {
         $responseData = $input;
         $statusArray = [];
@@ -101,7 +101,9 @@ class HelperTools {
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
         }
 
-        return response()->json($responseData, $code, array('Content-Type' => 'application/json'), JSON_PRETTY_PRINT);
+        $headers['Content-Type'] = 'application/json';
+
+        return response()->json($responseData, $code, $headers, JSON_PRETTY_PRINT);
     }
 
     // Helper to make Guzzle requests to other microservices
