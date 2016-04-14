@@ -73,7 +73,7 @@ trait ServerDeployTrait
                     $this->out(
                         'Verifying remote directory...',
                         'info',
-                        ' . '
+                        "\n . "
                     );
 
                     if ($line != env('REMOTE_WORKTREE')) {
