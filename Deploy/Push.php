@@ -202,7 +202,7 @@ class Push extends Command
         if ($which == 'Exit') {
             $this->abort();
         }
-print_r($which);
+
         $this->git->setDirectory($which.'/.git');
         $this->git->setWorkTree($which);
 

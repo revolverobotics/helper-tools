@@ -219,7 +219,6 @@ class GitManager
 
     public function addFlag($flag)
     {
-        \Log::debug($flag);
         switch($flag) {
             case '-f':
                 $lookup = '/git\s\w*/';
