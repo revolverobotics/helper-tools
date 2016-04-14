@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\Logging\Middleware;
+namespace App\Submodules\ToolsLaravelMicroservice\App\Middleware;
 
 use DB;
 use Log;
