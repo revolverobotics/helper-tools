@@ -4,6 +4,10 @@ namespace App\Submodules\ToolsLaravelMicroservice\App;
 
 class RRHelper {
 
+    protected static $vpcExtension;
+
+    protected static $requestHost;
+
     public static function debugLog($resource,$info)
     {
         if (getenv('APP_DEBUG') == true)
@@ -97,57 +101,23 @@ class RRHelper {
     // Helper to make Guzzle requests to other microservices
     public static function sendRequest($method, $microservice, $url, $data, $audit=1)
     {
-        switch(\App::environment()):
-
-            case "local":
-                $extension = '.dev';
-                break;
-
-            case "development":
-                $extension = '.dev';
-                break;
-
-            case "production":
-                $extension = '.com';
-                break;
-
-            default:
-                $extension = getenv('VPC_EXTENSION') ?: '.com';
-                break;
-
-        endswitch;
-
-        $microserviceArray = [
-            // new
-            'devices'		=> 'devices.kubi-vpc'.$extension,
-            'auditing'		=> 'auditing.kubi-vpc'.$extension,
-            'users'		=> 'users.kubi-vpc'.$extension,
-            'locations'		=> 'locations.kubi-vpc'.$extension,
-
-            // legacy
-            'kubi-service' => 'service.kubi-vpc'.$extension,
-            'kubi-auditing' => 'auditing.kubi-vpc'.$extension,
-            'kubi-users' => 'users.kubi-vpc'.$extension,
-            'kubi-video' => 'video.kubi-vpc'.$extension,
-        ];
+        self::setRequestHost($microservice);
 
         $client = new \GuzzleHttp\Client();
 
         // Sending application/x-www-for-urlencoded POST, PUT, & PATCH (non-GET) requests requires
         // `form_params` request options, instead of `query`
-        if ($method != 'GET'):
-
+        if ($method != 'GET') {
             $data['form_params'] = $data['query'];
             unset($data['query']);
-
-        endif;
+        }
 
         $dataArray = $data;
         $dataArray['http_errors'] = false; // don't fail on error (400, 500, etc.)
 
         // Forward headers (modified) to backend
         $headers = \Request::header();
-        $headers['host'][0] = $microserviceArray[$microservice];
+        $headers['host'][0] = self::$requestHost;
         $headers['connection'][0] = "close";
         // We're always going to be sending data to the backend
         // in a certain way, so let's let guzzle detect the Content-Type:
@@ -155,13 +125,49 @@ class RRHelper {
         unset($headers['content-length']);
         $dataArray['headers'] = $headers;
 
-        $rawResponse = $client->request($method, $microserviceArray[$microservice].$url, $dataArray);
+        $rawResponse = $client->request(
+            $method,
+            self::$requestHost.$url,
+            $dataArray
+        );
 
         $parsedResponse = [];
         $parsedResponse['json'] = json_decode($rawResponse->getBody(), true);
         $parsedResponse['code'] = $rawResponse->getStatusCode();
 
         return $parsedResponse;
+    }
+
+    protected static function setRequestHost($host)
+    {
+        self::getVpcExtension();
+
+        $microserviceArray = [
+            // new
+            'devices'		=> 'devices.kubi-vpc'.self::$vpcExtension,
+            'auditing'		=> 'auditing.kubi-vpc'.self::$vpcExtension,
+            'users'		=> 'users.kubi-vpc'.self::$vpcExtension,
+            'locations'		=> 'locations.kubi-vpc'.self::$vpcExtension,
+
+            // legacy
+            'kubi-service' => 'service.kubi-vpc'.self::$vpcExtension,
+            'kubi-auditing' => 'auditing.kubi-vpc'.self::$vpcExtension,
+            'kubi-users' => 'users.kubi-vpc'.self::$vpcExtension,
+            'kubi-video' => 'video.kubi-vpc'.self::$vpcExtension,
+        ];
+
+        self::$requestHost = $microserviceArray[$host];
+    }
+
+    protected static function getVpcExtension()
+    {
+        self::$vpcExtension = env('VPC_EXTENSION', function() {
+            if (\App::environment() == 'local' || \App::environment == 'dev') {
+                return '.dev';
+            } elseif (\App::environment() == 'production') {
+                return '.com';
+            }
+        });
     }
 
     public static function getAuthorizationHeader($request)
