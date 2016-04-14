@@ -14,6 +14,8 @@ class LogReport
 
     protected $queryLog;
 
+    protected $finalLog;
+
     /**
      * Handle an incoming request.
      *
@@ -28,9 +30,7 @@ class LogReport
 
     public function terminate($request, $response)
     {
-        $this->request = $request;
-        $this->response = $response;
-        $this->queryLog = DB::getQueryLog();
+        $this->init($request, $response);
 
         if ($this->hasContentTypeHtml($this->response))
             return; // don't log html responses
@@ -39,62 +39,76 @@ class LogReport
             return;
 
         try {
-            $finalLog = 'Returned ' . $this->response->status() .
-                ' | ' . app()['appLog'];
-
-            $finalLog .= PHP_EOL . PHP_EOL . print_r($request->all(), true);
-
-            if (count($this->queryLog) > 0)
-                $finalLog .= PHP_EOL . 'Queries:' . PHP_EOL .
-                    print_r($this->queryLog, true);
-
-            $finalLog .= PHP_EOL . '------------- Response -------------' .
-                PHP_EOL . PHP_EOL . $this->response->headers;
-            $finalLog .= PHP_EOL . $this->response->getContent();
-
-            $finalLog .= PHP_EOL . PHP_EOL . '____________ End of Log ____________' .
-                PHP_EOL . PHP_EOL;
-
-            switch ($this->response->status()) {
-
-                case 200:
-                    Log::debug($finalLog);
-                    break;
-
-                case 302:
-                    // don't log redirects
-                    break;
-
-                case 400:
-                    Log::notice($finalLog);
-                    break;
-
-                case 401:
-                    Log::warning($finalLog);
-                    break;
-
-                case 403:
-                    Log::warning($finalLog);
-                    break;
-
-                case 404:
-                    Log::notice($finalLog);
-                    break;
-
-                case 405:
-                    Log::notice($finalLog);
-                    break;
-
-                case 500:
-                    Log::error($finalLog);
-                    break;
-
-                default:
-                    Log::warning($finalLog);
-
-            }
+            $this->makeFinalLog();
+            $this->outputFinalLog();
         } catch (\Exception $e) {
             \Log::critical('Couldn\'t get app log.');
+        }
+    }
+
+    protected function init($request, $response)
+    {
+        $this->request = $request;
+        $this->response = $response;
+        $this->queryLog = DB::getQueryLog();
+    }
+
+    protected function makeFinalLog()
+    {
+        $finalLog = 'Returned '.$this->response->status().' | '.app()['appLog'];
+
+        $finalLog .= PHP_EOL.PHP_EOL.print_r($request->all(), true);
+
+        if (count($this->queryLog) > 0)
+            $finalLog .= PHP_EOL.'Queries:'.PHP_EOL.
+                print_r($this->queryLog, true);
+
+        $finalLog .= PHP_EOL.'------------- Response -------------'.
+            PHP_EOL.PHP_EOL.$this->response->headers;
+        $finalLog .= PHP_EOL.$this->response->getContent();
+
+        $finalLog .= PHP_EOL.PHP_EOL.'____________ End of Log ____________'.
+            PHP_EOL.PHP_EOL;
+    }
+
+    protected function outputFinalLog()
+    {
+        switch ($this->response->status()) {
+
+            case 200:
+                Log::debug($this->finalLog);
+                break;
+
+            case 302:
+                // don't log redirects
+                break;
+
+            case 400:
+                Log::notice($this->finalLog);
+                break;
+
+            case 401:
+                Log::warning($this->finalLog);
+                break;
+
+            case 403:
+                Log::warning($this->finalLog);
+                break;
+
+            case 404:
+                Log::notice($this->finalLog);
+                break;
+
+            case 405:
+                Log::notice($this->finalLog);
+                break;
+
+            case 500:
+                Log::error($this->finalLog);
+                break;
+
+            default:
+                Log::warning($this->finalLog);
         }
     }
 
