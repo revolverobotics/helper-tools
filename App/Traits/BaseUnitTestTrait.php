@@ -4,7 +4,9 @@ namespace App\Submodules\ToolsLaravelMicroservice\App\Traits;
 
 trait BaseUnitTestTrait
 {
-    private function verifyTestKey()
+    protected $testVariables;
+
+    protected function verifyTestKey()
     {
         if (!$this->request->has('test_key')) {
             throw new \BadRequestHttpException('[test_key] must be provided.');
@@ -23,11 +25,24 @@ trait BaseUnitTestTrait
 
     protected function verifyTestVariables()
     {
-        throw new \FatalErrorException(
-            "Each microservice will have a different set of test variables.\n".
-            "Extend the BaseUnitTestController and create a service-specific\n".
-            "UnitTestTrait if necessary."
-        );
+        try {
+            $this->setTestVariables();
+        } catch (\Exception $e) {
+            throw new \FatalErrorException(
+                "You must create a method called setTestVariables() in a \n".
+                "UnitTestController that extends BaseUnitTestController. \n".
+                "\$this->testVariables must be set to an array of variables \n".
+                "to test."
+            );
+        }
+
+        if (in_array(null, $this->testVariables)) {
+            throw new \FatalErrorException(
+                "You must set all the appropriate environment variables \n".
+                "(prefixed with TEST_) in order to run unit and \n".
+                "post-deployment tests.  Please see .env.example."
+            );
+        }
     }
 
     protected function performCleanupOperations()
