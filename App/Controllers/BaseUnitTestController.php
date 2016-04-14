@@ -18,6 +18,19 @@ class BaseUnitTestController extends Controller {
         $this->initialize($request);
     }
 
+    public function postPreTest()
+    {
+        $this->verifyTestKey();
+
+        $this->verifyTestVariables();
+
+        $this->runCustomChecks();
+
+        $this->makeResponse([], 'Pre-test finished.');
+
+        return $this->success();
+    }
+
     public function getCache()
     {
         $this->makeResponse(['data' => Cache::get('PHPUnitTest')]);
@@ -35,8 +48,6 @@ class BaseUnitTestController extends Controller {
     public function postCleanup()
     {
         $this->verifyTestKey();
-
-        $this->verifyTestVariables();
 
         $this->performCleanupOperations();
 

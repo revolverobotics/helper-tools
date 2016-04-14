@@ -45,6 +45,12 @@ trait BaseUnitTestTrait
         }
     }
 
+    protected function runCustomChecks()
+    {
+        // Add any microservice-specific pre-test checks in
+        // UnitTestController extends BaseUnitTestController
+    }
+
     protected function performCleanupOperations()
     {
         throw new \FatalErrorException(
