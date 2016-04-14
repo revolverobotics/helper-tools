@@ -73,42 +73,20 @@ class LogReport
 
     protected function outputFinalLog()
     {
-        switch ($this->response->status()) {
+        $errorCodes = [
+            200 => 'debug',
+            400 => 'notice',
+            404 => 'notice',
+            405 => 'notice',
+            401 => 'warning',
+            403 => 'warning',
+            500 => 'error'
+        ];
 
-            case 200:
-                Log::debug($this->finalLog);
-                break;
-
-            case 302:
-                // don't log redirects
-                break;
-
-            case 400:
-                Log::notice($this->finalLog);
-                break;
-
-            case 401:
-                Log::warning($this->finalLog);
-                break;
-
-            case 403:
-                Log::warning($this->finalLog);
-                break;
-
-            case 404:
-                Log::notice($this->finalLog);
-                break;
-
-            case 405:
-                Log::notice($this->finalLog);
-                break;
-
-            case 500:
-                Log::error($this->finalLog);
-                break;
-
-            default:
-                Log::warning($this->finalLog);
+        if (array_key_exists($this->response->status(), $errorCodes)) {
+            Log::$errorCodes[$this->response->status()]($this->finalLog);
+        } else {
+            Log::warning($this->finalLog);
         }
     }
 
