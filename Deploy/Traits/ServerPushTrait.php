@@ -184,7 +184,7 @@ trait ServerPushTrait
 
     protected function pushTags()
     {
-        if (!$this->isOrigin() && $this->git->branch != 'master') {
+        if ($this->git->branch != 'master' || !$this->isOrigin()) {
             return;
         }
 
