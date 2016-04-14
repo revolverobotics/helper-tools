@@ -50,7 +50,7 @@ trait OutputTrait
     protected function outputToLog($line)
     {
         file_put_contents(
-            '/tmp/'.$this->logTime.'_'.$this->logApp.'_push_log.txt',
+            '/tmp/'.$this->logApp.'_push_log_'.$this->logTime.'.txt',
             $line."\n",
             FILE_APPEND
         );

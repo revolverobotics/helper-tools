@@ -290,8 +290,8 @@ trait ServerDeployTrait
     {
         $dbCredentials = $this->dbCredentials;
 
-        $this->dbBackup = $this->pushTime.'_'.
-            $dbCredentials['DB_DATABASE'].'.sql';
+        $this->dbBackup = $dbCredentials['DB_DATABASE'].
+            '_'.$this->pushTime.'.sql';
 
         $commandArray = [
             'export TERM=vt100',
