@@ -22,8 +22,6 @@ class BaseUnitTestController extends Controller {
     {
         $this->verifyTestKey();
 
-        $this->verifyTestVariables();
-
         $this->runCustomChecks();
 
         $this->makeResponse([], 'Pre-test finished.');

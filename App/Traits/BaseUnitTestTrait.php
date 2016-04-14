@@ -23,28 +23,6 @@ trait BaseUnitTestTrait
             }
     }
 
-    protected function verifyTestVariables()
-    {
-        try {
-            $this->setTestVariables();
-        } catch (\Exception $e) {
-            throw new \FatalErrorException(
-                "You must create a method called setTestVariables() in a \n".
-                "UnitTestController that extends BaseUnitTestController. \n".
-                "\$this->testVariables must be set to an array of variables \n".
-                "to test."
-            );
-        }
-
-        if (in_array(null, $this->testVariables)) {
-            throw new \FatalErrorException(
-                "You must set all the appropriate environment variables \n".
-                "(prefixed with TEST_) in order to run unit and \n".
-                "post-deployment tests.  Please see .env.example."
-            );
-        }
-    }
-
     protected function runCustomChecks()
     {
         // Add any microservice-specific pre-test checks in
