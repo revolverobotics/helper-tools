@@ -16,7 +16,7 @@ class LogInitialize
      */
     public function handle($request, Closure $next)
     {
-        if (strpos($request->url(), 'admin/logs') === false) {
+        if (strpos($request->url(), 'admin/log-viewer') === false) {
 
 			$nowformatted = date("Y-m-d H:i:s", time());
 

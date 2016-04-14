@@ -44,7 +44,11 @@ class CheckForMaintenanceMode
         if ($this->app->isDownForMaintenance()
             && $this->app->environment() != 'testing'
         ) {
-            throw new HttpException(503);
+            throw new HttpException(
+                503,
+                'Server is currently undergoing maintenance. We should be '
+                    .'back up shortly.'
+            );
         }
 
         return $next($request);
