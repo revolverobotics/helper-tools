@@ -5,13 +5,13 @@ namespace App\Submodules\ToolsLaravelMicroservice\App\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Submodules\ToolsLaravelMicroservice\App\Traits\UnitTestTrait;
+use App\Submodules\ToolsLaravelMicroservice\App\Traits\BaseUnitTestTrait;
 
 use Cache;
 
-class UnitTestController extends Controller {
+class BaseUnitTestController extends Controller {
 
-    use UnitTestTrait;
+    use BaseUnitTestTrait;
 
     public function __construct(Request $request)
     {
