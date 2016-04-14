@@ -42,7 +42,7 @@ class LogReport
             $this->makeFinalLog();
             $this->outputFinalLog();
         } catch (\Exception $e) {
-            \Log::critical('Couldn\'t get app log.');
+            \Log::critical($e->getMessage());
         }
     }
 
@@ -55,20 +55,22 @@ class LogReport
 
     protected function makeFinalLog()
     {
-        $finalLog = 'Returned '.$this->response->status().' | '.app()['appLog'];
+        $this->finalLog = 'Returned '.$this->response->status().
+            ' | '.app()['appLog'];
 
-        $finalLog .= PHP_EOL.PHP_EOL.print_r($request->all(), true);
+        $this->finalLog .= PHP_EOL.PHP_EOL.print_r($this->request->all(), true);
 
         if (count($this->queryLog) > 0)
-            $finalLog .= PHP_EOL.'Queries:'.PHP_EOL.
+            $this->finalLog .= PHP_EOL.'Queries:'.PHP_EOL.
                 print_r($this->queryLog, true);
 
-        $finalLog .= PHP_EOL.'------------- Response -------------'.
+        $this->finalLog .= PHP_EOL.'------------- Response -------------'.
             PHP_EOL.PHP_EOL.$this->response->headers;
-        $finalLog .= PHP_EOL.$this->response->getContent();
 
-        $finalLog .= PHP_EOL.PHP_EOL.'____________ End of Log ____________'.
-            PHP_EOL.PHP_EOL;
+        $this->finalLog .= PHP_EOL.$this->response->getContent();
+
+        $this->finalLog .= PHP_EOL.PHP_EOL.
+            '____________ End of Log ____________'.PHP_EOL.PHP_EOL;
     }
 
     protected function outputFinalLog()
@@ -84,7 +86,7 @@ class LogReport
         ];
 
         if (array_key_exists($this->response->status(), $errorCodes)) {
-            Log::$errorCodes[$this->response->status()]($this->finalLog);
+            Log::{$errorCodes[$this->response->status()]}($this->finalLog);
         } else {
             Log::warning($this->finalLog);
         }
