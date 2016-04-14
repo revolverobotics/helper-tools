@@ -117,33 +117,27 @@ trait ServerPushTrait
             $this->git->setBranch($this->option('branch'));
         }
 
+        if ($this->git->remote == 'production') {
+            $warning = 'ARE YOU SURE YOU WANT TO PUSH TO PRODUCTION??';
+
+            if ($this->confirm($warning)) {
+                $this->out('Pushing branch ['.$this->git->branch.'] to '.
+                    'production server, hold on to your butts...',
+                    'info'
+                );
+            } else {
+                $this->out('Push aborted.', 'error');
+                throw new \Exception('Aborting.');
+            }
+        } else {
+            $this->out('Pushing branch ['.$this->git->branch.
+                '] to remote ['.$this->git->remote.']', 'comment');
+        }
+
         if ($this->isRemoteServer()) {
             $this->checkEnvFiles();
             $this->getRollbackCommit();
             $this->putIntoMaintenanceMode();
-            $this->out('');
-        }
-
-        switch($this->git->remote) {
-            case "production":
-                $warning = 'ARE YOU SURE YOU WANT TO PUSH TO PRODUCTION??';
-
-                if ($this->confirm($warning)) {
-                    $this->out('Pushing branch ['.$this->git->branch.'] to '.
-                        'production server, hold on to your butts...',
-                        'info'
-                    );
-                } else {
-                    $this->out('Push aborted', 'info');
-
-                    return;
-                }
-                break;
-
-            default:
-                $this->out('Pushing branch ['.$this->git->branch.
-                    '] to remote ['.$this->git->remote.']', 'comment');
-                break;
         }
 
         $this->out('');

@@ -16,6 +16,13 @@ trait ServerDeployTrait
     protected function checkEnvFiles()
     {
         $this->out(
+            'Beginning server deployment on ['.$this->git->remote.']...',
+            'comment',
+            "\n "
+        );
+        $this->out('');
+
+        $this->out(
             'Checking remote for .env and .env.testing files...',
             'info',
             ' . '
@@ -36,17 +43,16 @@ trait ServerDeployTrait
         });
 
         $this->out('.env and .env.testing are present', 'line', ' ✓ ');
+
+        $this->out(
+            "\nFIXME: We should write a pre-check to make sure local .env and".
+            'remote .env (and .env.testing) have the same set of variables',
+            'comment'
+        );
     }
 
     protected function putIntoMaintenanceMode()
     {
-        $this->out(
-            'Beginning server deployment on ['.$this->git->remote.']...',
-            'comment',
-            "\n "
-        );
-        $this->out('');
-
         $commandArray = [
             'export TERM=vt100',
             'cd '.env('REMOTE_WORKTREE'),
