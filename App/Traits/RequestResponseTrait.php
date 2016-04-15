@@ -6,6 +6,7 @@
 namespace App\Submodules\ToolsLaravelMicroservice\App\Traits;
 
 use Helper;
+use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
 
 trait RequestResponseTrait
 {
@@ -68,6 +69,16 @@ trait RequestResponseTrait
             '/'.$endpoint,
             ['query' => $data]
         );
+
+        if ($backendResponse['code'] != 200) {
+            throw new BackendException(
+                $backendResponse['code'],
+                json_encode(
+                    $backendResponse['json'],
+                    JSON_UNESCAPED_SLASHES
+                )
+            );
+        }
 
         /*
             If true, store the response in our $this->response property to be
