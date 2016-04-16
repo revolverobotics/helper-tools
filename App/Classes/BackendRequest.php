@@ -2,7 +2,6 @@
 
 namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
 
-use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
 class BackendRequest
@@ -91,11 +90,9 @@ class BackendRequest
      * @param string $service
      * @param \Illuminate\Http\Request $parentRequest
      */
-    public function __construct(string $service, Request $parentRequest)
+    public function __construct(string $service)
     {
         $this->client = new Client();
-
-        $this->parentRequestHeaders = $parentRequest->header();
 
         $this->validateService($service);
 
@@ -249,7 +246,7 @@ class BackendRequest
      */
     protected function setRequestHeaders()
     {
-        $this->requestHeaders = $this->parentRequestHeaders;
+        $this->requestHeaders = app()->request->header();
 
         $this->requestHeaders['host'][0] = $this->baseUrl;
         $this->requestHeaders['connection'][0] = 'close';
