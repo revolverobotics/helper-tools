@@ -139,7 +139,7 @@ class BackendRequest
     public function setBaseUrl(string $service)
     {
         $this->baseUrl = $service.'.'.
-                         MICROSERVICE_DOMAIN.'.'.
+                         static::MICROSERVICE_DOMAIN.'.'.
                          $this->detectEnvironment();
     }
 
