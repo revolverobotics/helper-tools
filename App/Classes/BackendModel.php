@@ -45,9 +45,9 @@ abstract class BackendModel implements ArrayAccess
      *
      * @var string
      */
-    public function __construct(BackendRequest $connection)
+    public function __construct()
     {
-        $this->connection = $connection($this->service);
+        $this->connection = new BackendRequest($this->service);
     }
 
     public function get($data)
