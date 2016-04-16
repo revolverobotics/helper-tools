@@ -124,10 +124,10 @@ class BackendRequest
         $env = app()->environment();
 
         if ($env == 'production') {
-            return '.com';
+            return 'com';
         }
 
-        return '.dev';
+        return 'dev';
     }
 
     /**

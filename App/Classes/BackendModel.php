@@ -50,7 +50,7 @@ abstract class BackendModel implements ArrayAccess
         $this->connection = new BackendRequest($this->service);
     }
 
-    public function get($data)
+    public function get(array $data)
     {
         $response = $this->connection->get($this->modelName, $data);
 
@@ -59,7 +59,7 @@ abstract class BackendModel implements ArrayAccess
         }
     }
 
-    public function post($data)
+    public function post(array $data)
     {
         $response = $this->connection->post($this->modelName, $data);
 
@@ -68,7 +68,7 @@ abstract class BackendModel implements ArrayAccess
         }
     }
 
-    public function put($data)
+    public function put(array $data)
     {
         $this->connection->put($this->modelName, $data);
 
@@ -77,7 +77,7 @@ abstract class BackendModel implements ArrayAccess
         }
     }
 
-    public function patch($data)
+    public function patch(array $data)
     {
         $this->connection->patch($this->modelName, $data);
 
@@ -86,7 +86,7 @@ abstract class BackendModel implements ArrayAccess
         }
     }
 
-    public function delete($data)
+    public function delete(array $data)
     {
         $this->connection->delete($this->modelName, $data);
 
