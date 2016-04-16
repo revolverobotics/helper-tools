@@ -54,7 +54,7 @@ abstract class BackendModel implements ArrayAccess
     {
         $response = $this->connection->get($this->modelName, $data);
 
-        if ($response->code() == 200) {
+        if ($this->connection->code() == 200) {
             // set $this->modelData with the response
         }
     }
@@ -63,7 +63,7 @@ abstract class BackendModel implements ArrayAccess
     {
         $response = $this->connection->post($this->modelName, $data);
 
-        if ($response->code() == 200) {
+        if ($this->connection->code() == 200) {
             // update $this->modelData with the response
         }
     }
@@ -72,7 +72,7 @@ abstract class BackendModel implements ArrayAccess
     {
         $this->connection->put($this->modelName, $data);
 
-        if ($response->code() == 200) {
+        if ($this->connection->code() == 200) {
             // update $this->modelData with the response
         }
     }
@@ -81,7 +81,7 @@ abstract class BackendModel implements ArrayAccess
     {
         $this->connection->patch($this->modelName, $data);
 
-        if ($response->code() == 200) {
+        if ($this->connection->code() == 200) {
             // update $this->modelData with the response
         }
     }
@@ -90,7 +90,7 @@ abstract class BackendModel implements ArrayAccess
     {
         $this->connection->delete($this->modelName, $data);
 
-        if ($response->code() == 200) {
+        if ($this->connection->code() == 200) {
             // $this->modelData = null
         }
     }
