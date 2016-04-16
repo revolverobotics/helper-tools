@@ -3,7 +3,7 @@
 namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
 
 use ArrayAccess;
-use BackendRequest;
+use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendRequest;
 
 /*
     Provides a base interface for retrieving and updating models from
