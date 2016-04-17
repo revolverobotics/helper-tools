@@ -148,13 +148,13 @@ class BackendRequest
      *
      * @param string $path
      * @param array $queryData
-     * @return void
+     * @return array
      */
     public function get(string $path, array $queryData)
     {
         $this->method = 'GET';
 
-        $this->send($path, $queryData);
+        return $this->send($path, $queryData);
     }
 
     /**
@@ -162,13 +162,13 @@ class BackendRequest
      *
      * @param string $path
      * @param array $queryData
-     * @return void
+     * @return array
      */
     public function post(string $path, array $queryData)
     {
         $this->method = 'POST';
 
-        $this->send($path, $queryData);
+        return $this->send($path, $queryData);
     }
 
     /**
@@ -176,13 +176,13 @@ class BackendRequest
      *
      * @param string $path
      * @param array $queryData
-     * @return void
+     * @return array
      */
     public function put(string $path, array $queryData)
     {
         $this->method = 'PUT';
 
-        $this->send($path, $queryData);
+        return $this->send($path, $queryData);
     }
 
     /**
@@ -190,13 +190,13 @@ class BackendRequest
      *
      * @param string $path
      * @param array $queryData
-     * @return void
+     * @return array
      */
     public function patch(string $path, array $queryData)
     {
         $this->method = 'PATCH';
 
-        $this->send($path, $queryData);
+        return $this->send($path, $queryData);
     }
 
     /**
@@ -204,13 +204,13 @@ class BackendRequest
      *
      * @param string $path
      * @param array $queryData
-     * @return void
+     * @return array
      */
     public function delete(string $path, array $queryData)
     {
         $this->method = 'DELETE';
 
-        $this->send($path, $queryData);
+        return $this->send($path, $queryData);
     }
 
     /**
@@ -282,6 +282,16 @@ class BackendRequest
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Return the response received from the backend microservice
+     *
+     * @return void
+     */
+    public function code()
+    {
+        return $this->getStatusCode();
     }
 
     /**

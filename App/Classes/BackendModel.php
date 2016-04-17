@@ -50,49 +50,48 @@ abstract class BackendModel implements ArrayAccess
         $this->connection = new BackendRequest($this->service);
     }
 
-    public function get(array $data)
+    protected function pipe(string $method, string $path, array $data)
     {
-        $response = $this->connection->get($this->modelName, $data);
+        $response = $this->connection->$method($path, $data);
 
-        if ($this->connection->code() == 200) {
-            // set $this->modelData with the response
+        if ($this->connection->code() != 200) {
+            throw new \Exception('Insert proper error handling here. :D');
         }
+
+        return $response;
     }
 
-    public function post(array $data)
+    public function load(array $data)
     {
-        $response = $this->connection->post($this->modelName, $data);
+        $this->modelData = $this->pipe('get', $this->modelName, $data);
 
-        if ($this->connection->code() == 200) {
-            // update $this->modelData with the response
-        }
+        return $this->modelData;
     }
 
-    public function put(array $data)
+    public function fresh(array $data)
     {
-        $this->connection->put($this->modelName, $data);
-
-        if ($this->connection->code() == 200) {
-            // update $this->modelData with the response
-        }
+        return $this->load($data);
     }
 
-    public function patch(array $data)
+    public function create(array $data)
     {
-        $this->connection->patch($this->modelName, $data);
+        $this->modelData = $this->pipe('put', $this->modelName, $data);
 
-        if ($this->connection->code() == 200) {
-            // update $this->modelData with the response
-        }
+        return $this->modelData;
+    }
+
+    public function update(array $data)
+    {
+        $this->modelData = $this->pipe('patch', $this->modelName, $data);
+
+        return $this->modelData;
     }
 
     public function delete(array $data)
     {
-        $this->connection->delete($this->modelName, $data);
+        $this->modelData = $this->pipe('delete', $this->modelName, $data);
 
-        if ($this->connection->code() == 200) {
-            // $this->modelData = null
-        }
+        return $this->modelData;
     }
 
     /**
