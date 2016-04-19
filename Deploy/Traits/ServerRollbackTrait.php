@@ -75,7 +75,20 @@ trait ServerRollbackTrait
 
         $commandArray = [
             'export TERM=vt100',
-            // restore from backup
+
+            // Drop database
+            "mysql -u {$dbCredentials['DB_USERNAME']} ".
+            "--password={$dbCredentials['DB_PASSWORD']} ".
+            "-h {$dbCredentials['DB_HOST']} ".
+            "-e 'DROP DATABASE {$dbCredentials['DB_DATABASE']};'",
+
+            // Re-create database
+            "mysql -u {$dbCredentials['DB_USERNAME']} ".
+            "--password={$dbCredentials['DB_PASSWORD']} ".
+            "-h {$dbCredentials['DB_HOST']} ".
+            "-e 'CREATE DATABASE {$dbCredentials['DB_DATABASE']};'",
+
+            // Restore from backup
             "mysql -u {$dbCredentials['DB_USERNAME']} ".
             "--password={$dbCredentials['DB_PASSWORD']} ".
             "-h {$dbCredentials['DB_HOST']} ".
