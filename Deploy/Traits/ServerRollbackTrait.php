@@ -93,7 +93,7 @@ trait ServerRollbackTrait
             "--password={$dbCredentials['DB_PASSWORD']} ".
             "-h {$dbCredentials['DB_HOST']} ".
             "{$dbCredentials['DB_DATABASE']} ".
-            "< /tmp/{$this->dbBackup} --debug-check",
+            "< /var/tmp/{$this->dbBackup} --debug-check",
         ];
 
         $this->out('Restoring database from backup...', 'info', "\n . ");
