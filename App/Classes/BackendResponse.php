@@ -5,13 +5,6 @@ namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
 class BackendResponse
 {
     /**
-     * Response content returned from BackendRequest
-     *
-     * @var array
-     */
-    protected $content;
-
-    /**
      * Status code of the response from the backend microservice.
      *
      * @var int
@@ -19,14 +12,29 @@ class BackendResponse
     protected $code;
 
     /**
+     * Response content returned from BackendRequest
+     *
+     * @var array
+     */
+    protected $content;
+
+    /**
+     * Response headers returned from BackendRequest
+     *
+     * @var array
+     */
+    protected $headers;
+
+    /**
      * Instantiate the response object
      *
      * @param string $service
      */
-    public function __construct($code, $content)
+    public function __construct($code, $content, $headers = null)
     {
         $this->code = $code;
         $this->content = $content;
+        $this->headers = $headers;
     }
 
     /**
@@ -37,6 +45,11 @@ class BackendResponse
     public function content()
     {
         return $this->content;
+    }
+
+    public function headers()
+    {
+        return $this->headers;
     }
 
     /**
