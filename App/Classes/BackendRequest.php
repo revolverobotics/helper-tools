@@ -88,7 +88,6 @@ class BackendRequest
      * Instantiate the client
      *
      * @param string $service
-     * @param \Illuminate\Http\Request $parentRequest
      */
     public function __construct(string $service)
     {
