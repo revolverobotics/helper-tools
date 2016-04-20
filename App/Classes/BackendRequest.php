@@ -284,7 +284,7 @@ class BackendRequest
     }
 
     /**
-     * Return the response received from the backend microservice
+     * Return the status code received from the backend microservice
      *
      * @return void
      */
@@ -294,7 +294,7 @@ class BackendRequest
     }
 
     /**
-     * Return the response received from the backend microservice
+     * Return the status code received from the backend microservice
      *
      * @return void
      */

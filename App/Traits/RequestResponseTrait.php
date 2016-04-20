@@ -5,7 +5,7 @@
 */
 namespace App\Submodules\ToolsLaravelMicroservice\App\Traits;
 
-use Helper;
+use App\Submodules\ToolsLaravelMicroservice\App\RRHelper;
 use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
 
 trait RequestResponseTrait
@@ -63,7 +63,7 @@ trait RequestResponseTrait
             $method = $this->request->method();
         }
 
-        $backendResponse = Helper::sendRequest(
+        $backendResponse = RRHelper::sendRequest(
             $method,
             $service,
             '/'.$endpoint,
