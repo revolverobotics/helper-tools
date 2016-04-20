@@ -27,17 +27,25 @@ class BackendAuthorizer
         $this->connection = new BackendRequest('users');
     }
 
-    public function verify(string $OAuthToken)
+    public function lookup(string $OAuthToken)
     {
         $grant = Cache::tags(['grants'])->get($OAuthToken);
 
         if (is_null($grant)) {
             $response = $this->connection->post(
-                'oauth',
-                [
-                    'access_token' => $OAuthToken
-                ]
+                'oauth', ['access_token' => $OAuthToken]
             );
+
+            if ($response->code() != 200) {
+                throw new \BackendException(
+                    $response->code(),
+                    $response->content()
+                );
+            }
+
+            $grant = $response->content();
         }
+
+        return $grant;
     }
 }
