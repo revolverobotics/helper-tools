@@ -26,9 +26,13 @@ class Handler extends ExceptionHandler
         'ValidationException'               => 400,
     ];
     // Intervention\Image\Exception\NotReadableException
-    // Left these out:
+    // Left this out:
     //        'HttpException' => $e->getCode(),
-    //        'BackendException' => $e->getCode()
+
+    protected $passThrough = [
+        'BackendException',
+        'ApiException'
+    ];
 
     /**
      * Report or log an exception.
@@ -63,6 +67,9 @@ class Handler extends ExceptionHandler
 
             if (isset($this->statusCodes[$exceptionType])) {
                 $statusCode = $this->statusCodes[$exceptionType];
+            } elseif (in_array($exceptionType, $this->passThrough)) {
+                $statusCode =
+                    json_decode($e->getMessage(), true)[0]['statusCode'];
             } else {
                 $statusCode = 500;
             }
