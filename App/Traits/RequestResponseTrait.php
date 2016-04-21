@@ -32,28 +32,35 @@ trait RequestResponseTrait
         return RRHelper::prettyJson($code, $response);
     }
 
-    public function makeResponse($data, $message="")
+    public function makeResponse($data, $message = "")
     {
-        if (!is_array($data) && !is_null($data))
+        if (!is_array($data) && !is_null($data)) {
             throw new \FatalErrorException(
                 'Argument 1 (data) of makeResponse must be passed as an array.'
             );
+        }
 
         $this->response = $data;
 
-        if (is_array($message))
+        if (is_array($message)) {
             $message = implode(" ", $message);
+        }
 
-        if (!is_string($message))
+        if (!is_string($message)) {
             throw new \FatalErrorException(
                 'Argument 2 (message) must be a string or an array.'
             );
+        }
 
         $this->response['message'] = $message;
     }
 
-    public function backendRequest($service, $endpoint, $data=null,
-        $method=null, $property=true
+    public function backendRequest(
+        $service,
+        $endpoint,
+        $data = null,
+        $method = null,
+        $property = true
     ) {
         if (is_null($data)) {
             $data = $this->request->all();
@@ -83,7 +90,7 @@ trait RequestResponseTrait
             } else {
                 eval(
                     'throw new '.$backendResponse['json']['exception'].
-                    '(\'$data\');'
+                    '("{$data}");'
                 );
             }
         }
