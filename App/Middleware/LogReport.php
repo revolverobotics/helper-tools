@@ -32,6 +32,15 @@ class LogReport
     {
         $this->init($request, $response);
 
+        // NOTE: just temporary while devving
+        if (strpos($request->url(), 'api/1.0/set-status') !== false) {
+            return;
+        }
+
+        if (strpos($request->url(), 'api/1.0/kubi-list') !== false) {
+            return;
+        }
+
         if ($this->hasContentTypeHtml($this->response))
             return; // don't log html responses
 

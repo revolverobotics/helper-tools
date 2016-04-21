@@ -299,8 +299,8 @@ trait ServerDeployTrait
             "--password={$dbCredentials['DB_PASSWORD']} ".
             "-h {$dbCredentials['DB_HOST']} ".
             "{$dbCredentials['DB_DATABASE']} ".
-            "> /tmp/{$this->dbBackup}",
-            'ls -l /tmp/ | grep "\.sql"'
+            "> /var/tmp/{$this->dbBackup}",
+            'ls -l /var/tmp/ | grep "\.sql"'
         ];
 
         $this->out('Backing up database...', 'info', "\n . ");
@@ -315,18 +315,18 @@ trait ServerDeployTrait
             $count++;
             if (strpos($line, $this->dbBackup) !== false) {
                 $this->out(
-                    'Backup verified and is located at: /tmp/'.$this->dbBackup,
+                    'Backup verified and is located at: /var/tmp/'.$this->dbBackup,
                     'line',
                     ' ✓ '
                 );
             } else {
                 $this->out(
-                    'Backup couldn\'t be found at /tmp/'.$this->dbBackup,
+                    'Backup couldn\'t be found at /var/tmp/'.$this->dbBackup,
                     'error'
                 );
 
                 throw new \Exception(
-                    'Backup could not be at /tmp/'.$this->dbBackup
+                    'Backup could not be at /var/tmp/'.$this->dbBackup
                 );
             }
         });
@@ -347,10 +347,10 @@ trait ServerDeployTrait
         passthru(
             'scp -i '.env('DEPLOY_KEY').
             ' ec2-user@'.env($server.'_HOST').
-            ':/tmp/'.$this->dbBackup.' /tmp/.'
+            ':/var/tmp/'.$this->dbBackup.' /var/tmp/.'
         );
 
-        exec('ls -l /tmp | grep "\.sql"', $localBackupList);
+        exec('ls -l /var/tmp | grep "\.sql"', $localBackupList);
         // $this->out($localBackupList, 'line', "\n");
 
         $backupFound = false;
@@ -363,16 +363,16 @@ trait ServerDeployTrait
 
         if ($backupFound) {
             $this->out(
-                'Backup verified and is located at: /tmp/'.$this->dbBackup,
+                'Backup verified and is located at: /var/tmp/'.$this->dbBackup,
                 'line',
                 ' ✓ '
             );
         } else {
-            $this->outError('Backup couldn\'t be found at /tmp/'.
+            $this->outError('Backup couldn\'t be found at /var/tmp/'.
                 $this->dbBackup);
 
             throw new \Exception(
-                'Backup could not be at /tmp/'.$this->dbBackup
+                'Backup could not be at /var/tmp/'.$this->dbBackup
             );
         }
     }
