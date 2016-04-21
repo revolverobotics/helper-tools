@@ -10,7 +10,7 @@ class RRHelper
 
     public static function debugLog($resource, $info)
     {
-        if (getenv('APP_DEBUG')) {
+        if (env('APP_DEBUG', false)) {
             \Log::info("[".$resource."] ".$info);
         }
     }
@@ -65,7 +65,7 @@ class RRHelper
         }
 
         // Finally, if we're in debug mode, let us know about it.
-        if (getenv('APP_DEBUG')) {
+        if (env('APP_DEBUG', false)) {
             $responseData[self::appName()] = 'debug';
             $responseData['url'] = \Request::fullUrl();
             try {
