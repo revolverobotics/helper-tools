@@ -22,6 +22,8 @@ class BackendAuthorizer
      */
     protected $connection;
 
+    protected $grant;
+
     public function __construct()
     {
         $this->connection = new BackendRequest('users');
@@ -46,6 +48,17 @@ class BackendAuthorizer
             $grant = $response->content();
         }
 
+        $this->grant = $grant;
+
         return $grant;
+    }
+
+    public function getGrant()
+    {
+        if (is_null($this->grant)) {
+            return "Error.. You must run the lookup() method first.";
+        }
+
+        return $this->grant;
     }
 }
