@@ -60,9 +60,9 @@ class Handler extends ExceptionHandler
                 strrpos($exceptionType, '\\')+1
             );
 
-            try {
+            if (isset($this->statusCodes[$exceptionType])) {
                 $statusCode = $this->statusCodes[$exceptionType];
-            } catch (\Exception $e) {
+            } else {
                 $statusCode = 500;
             }
 
