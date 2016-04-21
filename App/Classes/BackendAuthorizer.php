@@ -34,6 +34,7 @@ class BackendAuthorizer
         $grant = Cache::tags(['grants'])->get($OAuthToken);
 
         if (is_null($grant)) {
+
             $response = $this->connection->post(
                 'oauth', ['access_token' => $OAuthToken]
             );
@@ -59,6 +60,6 @@ class BackendAuthorizer
             return "Error.. You must run the lookup() method first.";
         }
 
-        return $this->grant;
+        return json_decode($this->grant, true);
     }
 }
