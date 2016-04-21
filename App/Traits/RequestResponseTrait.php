@@ -82,6 +82,13 @@ trait RequestResponseTrait
             $data['service'] = $service;
             $data = json_encode($data, JSON_UNESCAPED_SLASHES);
 
+            if (!isset($backendResponse['json']['exception'])) {
+                throw new \BackendException(
+                    $backendResponse['code'],
+                    json_encode($backendResponse['json'])
+                );
+            }
+
             if ($backendResponse['json']['exception'] == 'UnauthorizedHttpException') {
                 eval(
                     'throw new '.$backendResponse['json']['exception'].

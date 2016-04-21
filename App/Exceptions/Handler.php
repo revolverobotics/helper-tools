@@ -67,9 +67,11 @@ class Handler extends ExceptionHandler
 
             if (isset($this->statusCodes[$exceptionType])) {
                 $statusCode = $this->statusCodes[$exceptionType];
-            } elseif (in_array($exceptionType, $this->passThrough)) {
+            } elseif (in_array($exceptionType, $this->passThrough) &&
+                isset(json_decode($e->getMessage(), true)['statusCode'])
+            ) {
                 $statusCode =
-                    json_decode($e->getMessage(), true)[0]['statusCode'];
+                    json_decode($e->getMessage(), true)['statusCode'];
             } else {
                 $statusCode = 500;
             }
