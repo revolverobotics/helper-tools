@@ -2,16 +2,17 @@
 
 namespace App\Submodules\ToolsLaravelMicroservice\App;
 
-class RRHelper {
-
+class RRHelper
+{
     protected static $vpcExtension;
 
     protected static $requestHost;
 
-    public static function debugLog($resource,$info)
+    public static function debugLog($resource, $info)
     {
-        if (getenv('APP_DEBUG') == true)
+        if (getenv('APP_DEBUG')) {
             \Log::info("[".$resource."] ".$info);
+        }
     }
 
     /*
@@ -20,26 +21,23 @@ class RRHelper {
     */
     public static function logTrail($input)
     {
-        try
-        {
+        try {
             $currentString = \App::make('logTrail');
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             \App::singleton('logTrail', 'stdClass');
 
             $currentString = \App::make('logTrail');
             $currentString->log = [];
         }
 
-        if (is_array($input) || is_string($input))
+        if (is_array($input) || is_string($input)) {
             array_push($currentString->log, $input);
-
-        else
+        } else {
             \Log::info($input);
+        }
     }
 
-    public static function prettyJson($code=200, $input=[], $headers=[])
+    public static function prettyJson($code = 200, $input = [], $headers = [])
     {
         $responseData = $input;
         $statusArray = [];
@@ -47,51 +45,38 @@ class RRHelper {
         /*
             Check if we're passing data as the first parameter
         */
-        if (is_array($code)):
-
+        if (is_array($code)) {
             // Assume 200 OK if passing data
             $statusArray = ['statusCode' => 200];
             $responseData = $statusArray + $code;
-            $code = 200;	// data has been assigned to responseData
+            $code = 200;    // data has been assigned to responseData
                             // let's reassign $code to the status code
-
-        elseif (is_integer($code)):
-
+        } elseif (is_integer($code)) {
             // otherwise, read the status code, and include data
             $statusArray = ['statusCode' => $code];
 
-            if (is_array($input)):
-
+            if (is_array($input)) {
                 $responseData = $statusArray + $input;
-
-            else:
-
+            } else {
                 $responseData = [];
                 $responseData['data'] = $input;
                 $responseData['statusCode'] = $code;
-
-            endif;
-
-        endif;
+            }
+        }
 
         // Finally, if we're in debug mode, let us know about it.
-        if (getenv('APP_DEBUG') == true):
-
+        if (getenv('APP_DEBUG')) {
             $responseData[self::appName()] = 'debug';
             $responseData['url'] = \Request::fullUrl();
-            try
-            {
+            try {
                 $logTrail = app()->make('logTrail');
                 $responseData['log'] = $logTrail->log;
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 // no trail
             }
             $responseData['SQL Queries'] = count(\DB::getQueryLog());
             $responseData['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-
-        endif;
+        }
 
         $headers['Content-Type'] = 'application/json';
 
@@ -99,8 +84,13 @@ class RRHelper {
     }
 
     // Helper to make Guzzle requests to other microservices
-    public static function sendRequest($method, $microservice, $url, $data, $audit=1)
-    {
+    public static function sendRequest(
+        $method,
+        $microservice,
+        $url,
+        $data,
+        $audit = 1
+    ) {
         self::setRequestHost($microservice);
 
         $client = new \GuzzleHttp\Client();
@@ -144,16 +134,16 @@ class RRHelper {
 
         $microserviceArray = [
             // new
-            'devices'		=> 'devices.kubi-vpc'.self::$vpcExtension,
-            'auditing'		=> 'auditing.kubi-vpc'.self::$vpcExtension,
-            'users'		=> 'users.kubi-vpc'.self::$vpcExtension,
-            'locations'		=> 'locations.kubi-vpc'.self::$vpcExtension,
+            'devices'   => 'devices.kubi-vpc'.self::$vpcExtension,
+            'auditing'  => 'auditing.kubi-vpc'.self::$vpcExtension,
+            'users'     => 'users.kubi-vpc'.self::$vpcExtension,
+            'locations' => 'locations.kubi-vpc'.self::$vpcExtension,
 
             // legacy
-            'kubi-service' => 'service.kubi-vpc'.self::$vpcExtension,
+            'kubi-service'  => 'service.kubi-vpc'.self::$vpcExtension,
             'kubi-auditing' => 'auditing.kubi-vpc'.self::$vpcExtension,
-            'kubi-users' => 'users.kubi-vpc'.self::$vpcExtension,
-            'kubi-video' => 'video.kubi-vpc'.self::$vpcExtension,
+            'kubi-users'    => 'users.kubi-vpc'.self::$vpcExtension,
+            'kubi-video'    => 'video.kubi-vpc'.self::$vpcExtension,
         ];
 
         self::$requestHost = $microserviceArray[$host];
@@ -161,12 +151,11 @@ class RRHelper {
 
     protected static function getVpcExtension()
     {
-        self::$vpcExtension = env('VPC_EXTENSION', function() {
-            if (\App::environment() == 'local' || \App::environment == 'dev') {
-                return '.dev';
-            } elseif (\App::environment() == 'production') {
+        self::$vpcExtension = env('VPC_EXTENSION', function () {
+            if (\App::environment() == 'production') {
                 return '.com';
             }
+            return '.dev';
         });
     }
 
@@ -174,8 +163,9 @@ class RRHelper {
     {
         $chunks = explode(" ", $request->header('Authorization'));
 
-        if (isset($chunks[1]))
+        if (isset($chunks[1])) {
             return $chunks[1];
+        }
 
         return null;
     }
@@ -187,8 +177,9 @@ class RRHelper {
         $foundLocal = strpos($domain, 'api.kubi-vpc.dev');
         $foundServer = strpos($domain, 'api.kubi.me');
 
-        if ($foundLocal !== false || $foundServer !== false)
+        if ($foundLocal !== false || $foundServer !== false) {
             return true;
+        }
 
         return false;
     }
@@ -202,14 +193,12 @@ class RRHelper {
         $hdr  = "-H 'Content-Type: application/x-www-form-urlencoded' ";
         $cmd  = "curl --silent -X " . $method . " " . $hdr . " -d \"" . $data . "\" " . $url;
 
-        if (strpos(php_uname('s'),'Windows') !== false):
+        if (strpos(php_uname('s'), 'Windows') !== false) {
             pclose(popen("start /B " . $cmd, "r"));
-
-        else:
+        } else {
             $cmd .= " > /dev/null 2>&1 &";
             exec($cmd, $output, $exit);
-
-        endif;
+        }
 
         return true;
     }
@@ -218,8 +207,9 @@ class RRHelper {
     {
         $appName = strrchr(base_path(), '/');
 
-        if ($appName === false)
+        if ($appName === false) {
             $appName = strrchr(base_path(), '\\');
+        }
 
         $appName = substr($appName, 1);
 
