@@ -23,13 +23,13 @@ trait RequestResponseTrait
 
     public function success()
     {
-        return Helper::prettyJson(200, $this->response);
+        return RRHelper::prettyJson(200, $this->response);
     }
 
     public function error($code, $response)
     {
         \Log::debug('error called');
-        return Helper::prettyJson($code, $response);
+        return RRHelper::prettyJson($code, $response);
     }
 
     public function makeResponse($data, $message="")
@@ -93,7 +93,7 @@ trait RequestResponseTrait
 
     public function backendResponse()
     {
-        return Helper::prettyJson(
+        return RRHelper::prettyJson(
             $this->response['code'],
             $this->response['json']
         );
