@@ -72,13 +72,17 @@ class Handler extends ExceptionHandler
                 'exception'  => $exceptionType
             ];
 
-            $message = json_decode($e->getMessage());
+            $message = json_decode($e->getMessage(), true);
 
             if (is_null($message)) {
                 $response['message'] = $e->getMessage();
                 $message             = $e->getMessage();
             } else {
                 $response['data']    = $message;
+                if (isset($message['data']['message'])) {
+                    // pass message thru
+                    $response['message'] = $message['data']['message'];
+                }
             }
 
             $headers = [];
