@@ -55,9 +55,10 @@ class Handler extends ExceptionHandler
         try {
             $exceptionType = get_class($e);
 
-            $exceptionType = substr(
-                $exceptionType,
-                strrpos($exceptionType, '\\')+1
+            $exceptionType = str_replace(
+                '\\',
+                '',
+                substr($exceptionType, strrpos($exceptionType, '\\'))
             );
 
             if (isset($this->statusCodes[$exceptionType])) {
