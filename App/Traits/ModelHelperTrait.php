@@ -4,7 +4,9 @@ namespace App\Submodules\ToolsLaravelMicroservice\App\Traits;
 
 trait ModelHelperTrait
 {
-    public function magicSearch(array $input)
+    protected $magicResult;
+
+    public function magicSearch(array $input, $pagination = 5)
     {
         if (is_null($this->queryable)) {
             throw new \FatalErrorException(
@@ -19,34 +21,79 @@ trait ModelHelperTrait
             $this->queryable
         );
 
-        $magicArray = [];
+        if (count($searchKeys) < 1) {
+            throw new \BadRequestHttpException(
+                'No input keys matched any searchable columns/fields.'
+            );
+        }
 
-        // while (list ($index, $key) = each($searchKeys)) {
-        //     $magicArray[$key] = $input[$key];
-        // }
-// \Log::debug($this->where($magicArray)->get());
-        // return $this->where($magicArray)->paginate(5);
+        $magicArray = [];
 
         $magicMethod = '';
 
         $model = $this->query();
 
+
         foreach ($searchKeys as $key) {
             if (is_string($input[$key])) {
                 $model->where($key, $input[$key]);
-                // $magicMethod .= "->where('{$key}', '{$input[$key]}')";
-                // call_user_func_array([$this, 'where'], [$key, $input[$key]]);
             } elseif (is_array($input[$key])) {
                 $model->whereIn($key, $input[$key]);
-                // $lookup = str_replace("\n", '', var_export($input[$key], true));
-                // $lookup = '['.implode(', ', $input[$key]).']';
-                // $magicMethod .= "->whereIn('{$key}', $lookup)";
-                // call_user_func_array([$this, 'whereIn'], [$key, $input[$key]]);
             }
         }
+        $result = $model->paginate($pagination);
 
-        // eval('$this'.$magicMethod.'->paginate(5);');
+        $this->magicResult = $result;
 
-        return $model->paginate(5);
+        return $result;
+    }
+
+    public function dataKeyToModelName($override = null)
+    {
+        if (!isset($this->magicResult)) {
+            return false;
+        }
+
+        $result = $this->magicResult->toArray();
+
+        if (!isset($result['data'])) {
+            return false;
+        }
+
+        if (is_null($override)) {
+            $name = $this->table;
+        } else {
+            $name = $override;
+        }
+
+        $result[$name] = $result['data'];
+        unset($result['data']);
+
+        return $this->trimPagination($result);
+    }
+
+    protected function trimPagination($result)
+    {
+        if ($result['last_page'] == 1) {
+            unset($result['per_page']);
+            unset($result['current_page']);
+            unset($result['last_page']);
+            unset($result['next_page_url']);
+            unset($result['prev_page_url']);
+            unset($result['from']);
+            unset($result['to']);
+        }
+
+        return $result;
+    }
+
+    public function getResult()
+    {
+        if (!isset($this->magicResult)) {
+            return false;
+        }
+
+        return $this->magicResult;
     }
 }
+
