@@ -27,12 +27,7 @@ trait ModelHelperTrait
             );
         }
 
-        $magicArray = [];
-
-        $magicMethod = '';
-
         $model = $this->query();
-
 
         foreach ($searchKeys as $key) {
             if (is_string($input[$key])) {
@@ -41,6 +36,7 @@ trait ModelHelperTrait
                 $model->whereIn($key, $input[$key]);
             }
         }
+
         $result = $model->paginate($pagination);
 
         $this->magicResult = $result;
@@ -96,4 +92,3 @@ trait ModelHelperTrait
         return $this->magicResult;
     }
 }
-
