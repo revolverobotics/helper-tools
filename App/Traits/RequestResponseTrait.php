@@ -70,6 +70,10 @@ trait RequestResponseTrait
             $method = $this->request->method();
         }
 
+        if ($method == 'GET') {
+            $endpoint .= '?'.http_build_query($data);
+        }
+
         $backendResponse = RRHelper::sendRequest(
             $method,
             $service,

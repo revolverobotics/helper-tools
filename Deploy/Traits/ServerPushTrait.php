@@ -15,18 +15,17 @@ trait ServerPushTrait
     {
         // Discover which remotes we have in the repo
         if ($this->argument('remote') == 'none') {
-
             $this->out('Remotes in this repo:', 'comment', ' ');
 
             $remotes = [];
 
-            foreach($this->git->getRemotes() as $remote)
-            {
+            foreach ($this->git->getRemotes() as $remote) {
                 $firstSpace = strpos($remote, "\t");
                 $remoteName = substr($remote, 0, $firstSpace);
 
-                if ($remoteName == 'upstream')
+                if ($remoteName == 'upstream') {
                     continue;
+                }
 
                 if (!in_array($remoteName, $remotes)) {
                     array_push($remotes, $remoteName);
@@ -35,9 +34,9 @@ trait ServerPushTrait
             }
 
             $this->git->setRemote($this->anticipate(
-                'Push to which remote?', $remotes
+                'Push to which remote?',
+                $remotes
             ));
-
         } else {
             $this->git->setRemote($this->argument('remote'));
         }
@@ -67,7 +66,7 @@ trait ServerPushTrait
 
             $untrackedFiles = false;
             $search_text = '??';
-            array_filter($this->git->status, function($el) use (
+            array_filter($this->git->status, function ($el) use (
                 $search_text,
                 &$untrackedFiles
             ) {
@@ -91,8 +90,7 @@ trait ServerPushTrait
             if ($this->option('amend')) {
                 $this->git->amend = true;
 
-                if (
-                    $this->confirm('Are you sure you want to amend the last '.
+                if ($this->confirm('Are you sure you want to amend the last '.
                     'commit? (potentially destructive) [y|N]')
                 ) {
                     $this->git->commit('', '--amend');
@@ -121,7 +119,8 @@ trait ServerPushTrait
             $warning = 'ARE YOU SURE YOU WANT TO PUSH TO PRODUCTION??';
 
             if ($this->confirm($warning)) {
-                $this->out('Pushing branch ['.$this->git->branch.'] to '.
+                $this->out(
+                    'Pushing branch ['.$this->git->branch.'] to '.
                     'production server, hold on to your butts...',
                     'info'
                 );
@@ -155,7 +154,7 @@ trait ServerPushTrait
             $this->git->addDeployKey('aws');
         }
 
-        if ($this->isOrigin()) {
+        if ($this->isOrigin() && $this->argument('version') != 'none') {
             $this->git->addFlag('--tags');
         }
 
@@ -188,7 +187,7 @@ trait ServerPushTrait
             return;
         }
 
-        if (   $this->newVersion != false
+        if ($this->newVersion != false
             && $this->newVersion != $this->currentVersion
         ) {
             $this->git->setTag($this->newVersion);

@@ -47,6 +47,16 @@ abstract class BackendModel implements ArrayAccess
      */
     public function __construct()
     {
+        if (is_null($this->service)) {
+            throw new \FatalErrorException(
+                'Model instantiation must provide [$service]'
+            );
+        }
+        if (is_null($this->modelName)) {
+            throw new \FatalErrorException(
+                'Model instantiation must provide [$modelName]'
+            );
+        }
         $this->connection = new BackendRequest($this->service);
     }
 
@@ -55,7 +65,10 @@ abstract class BackendModel implements ArrayAccess
         $response = $this->connection->$method($path, $data);
 
         if ($this->connection->code() != 200) {
-            throw new \Exception('Insert proper error handling here. :D');
+            throw new \BackendException(
+                $this->connection->code(),
+                json_encode($response)
+            );
         }
 
         return $response;
