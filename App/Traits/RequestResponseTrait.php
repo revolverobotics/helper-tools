@@ -82,28 +82,9 @@ trait RequestResponseTrait
         );
 
         if ($backendResponse['code'] != 200) {
-            $data = $backendResponse['json'];
-            $data['service'] = $service;
-            $data = json_encode($data, JSON_UNESCAPED_SLASHES);
+            $payload = json_encode($backendResponse['json']);
 
-            if (!isset($backendResponse['json']['exception'])) {
-                throw new \BackendException(
-                    $backendResponse['code'],
-                    json_encode($backendResponse['json'])
-                );
-            }
-
-            if ($backendResponse['json']['exception'] == 'UnauthorizedHttpException') {
-                eval(
-                    'throw new '.$backendResponse['json']['exception'].
-                    '(null, "{$data}");'
-                );
-            } else {
-                eval(
-                    'throw new '.$backendResponse['json']['exception'].
-                    '("{$data}");'
-                );
-            }
+            throw new \BackendException($backendResponse['code'], $payload);
         }
 
         /*

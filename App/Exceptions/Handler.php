@@ -57,55 +57,21 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         try {
-            $exceptionType = get_class($e);
-
-            $exceptionType = str_replace(
-                '\\',
-                '',
-                substr($exceptionType, strrpos($exceptionType, '\\'))
-            );
-
-            if (isset($this->statusCodes[$exceptionType])) {
-                $statusCode = $this->statusCodes[$exceptionType];
-            } elseif (in_array($exceptionType, $this->passThrough) &&
-                isset(json_decode($e->getMessage(), true)['statusCode'])
-            ) {
-                $statusCode =
-                    json_decode($e->getMessage(), true)['statusCode'];
-            } else {
-                $statusCode = 500;
-            }
-
-            $response = [
-                'statusCode' => $statusCode,
-                'exception'  => $exceptionType
-            ];
-
-            $message = json_decode($e->getMessage(), true);
-
-            if (is_null($message)) {
-                $response['message'] = $e->getMessage();
-                $message             = $e->getMessage();
-            } else {
-                $response['data']    = $message;
-                if (isset($message['data']['message'])) {
-                    // pass message thru
-                    $response['message'] = $message['data']['message'];
-                }
-            }
-
             $headers = [];
 
-            if (env('APP_DEBUG', false)) {
-                $where                   = "{$e->getFile()}:{$e->getLine()}";
-                $response['at']          = $where;
-                $response['stack trace'] = $this->wrapStackTrace($e);
-                $response['previous']    = $e->getPrevious();
+            $response = $this->getExceptionType($e);
+
+            if (!in_array($response['exception'], $this->passThrough)) {
+                $response = $this->normalException($e, $response);
+            } else {
+                $response = $this->backendException($e, $response);
             }
+
+            $this->addDebugData($e, $response);
 
             return response()->json(
                 $response,
-                $statusCode,
+                $response['statusCode'],
                 $headers,
                 JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
             );
@@ -114,6 +80,88 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $e);
+    }
+
+    protected function getExceptionType(Exception $e)
+    {
+        $exceptionType = get_class($e);
+
+        $exceptionType = str_replace(
+            '\\',
+            '',
+            substr($exceptionType, strrpos($exceptionType, '\\'))
+        );
+
+        if (isset($this->statusCodes[$exceptionType])) {
+            $statusCode = $this->statusCodes[$exceptionType];
+        } elseif (in_array($exceptionType, $this->passThrough) &&
+            isset(json_decode($e->getMessage(), true)['statusCode'])
+        ) {
+            $statusCode =
+                json_decode($e->getMessage(), true)['statusCode'];
+        } else {
+            $statusCode = 500;
+        }
+
+        $response = [
+            'statusCode' => $statusCode,
+            'exception'  => $exceptionType
+        ];
+
+        return $response;
+    }
+
+    protected function normalException(Exception $e, $response)
+    {
+        $this->parsePayload($e, $response, function ($payload) use (&$response) {
+            if (isset($payload['message'])) {
+                $response['message'] = $payload['message'];
+                unset($payload['message']);
+            }
+
+            $response['debug'] = $payload;
+        });
+
+        return $response;
+    }
+
+    protected function backendException(Exception $e, $response)
+    {
+        $this->parsePayload($e, $response, function ($payload) use (&$response) {
+            $response = $payload;
+        });
+
+        return $response;
+    }
+
+    protected function parsePayload(Exception $e, &$response, $callback = null)
+    {
+        $payload = json_decode($e->getMessage(), true);
+
+        if (is_null($payload)) {
+            $response['message'] = $e->getMessage();
+            $payload             = $e->getMessage();
+        } else {
+            if (is_callable($callback)) {
+                $callback($payload);
+            }
+        }
+    }
+
+    protected function addDebugData(Exception $e, &$response)
+    {
+        if (env('APP_DEBUG', false)) {
+            if (!isset($response['debug'])) {
+                $response['debug'] = [];
+            }
+
+            $debug = [
+                "{$e->getFile()}:{$e->getLine()}",
+                $this->wrapStackTrace($e)
+            ];
+
+            array_push($response['debug'], $debug);
+        }
     }
 
     protected function wrapStackTrace($e)
