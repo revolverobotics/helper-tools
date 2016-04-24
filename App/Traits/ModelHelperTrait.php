@@ -66,24 +66,35 @@ trait ModelHelperTrait
      *
      * @return array
      */
-    public function extract()
+    public function extract($keyName)
     {
         if (!is_null($this->magicResult)) {
-            return $this->magicResult->toArray()['data'];
+            return $this->getMagicResult();
         }
-        return collect([$this->toArray()]);
+
+        return [$keyName => [$this]];
+    }
+
+    public function extractArray($keyName)
+    {
+        if (!is_null($this->magicResult)) {
+            return $this->getMagicResultArray($keyName);
+        }
+
+        return [$this->toArray()];
     }
 
     /**
+     * Returns any results from the magicSearch method.
      * Replaces the 'data' key name returned by LengthAwarePaginator
      * with a model-centric term, e.g., 'users'
      *
      * @param  string $override
      * @return array
      */
-    public function dataKeyToModelName($override = null)
+    public function getMagicResultArray($override = null)
     {
-        if (!isset($this->magicResult)) {
+        if (is_null($this->magicResult)) {
             return false;
         }
 
@@ -123,7 +134,7 @@ trait ModelHelperTrait
      *
      * @return Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getResult()
+    public function getMagicResult()
     {
         if (!isset($this->magicResult)) {
             return false;
@@ -153,4 +164,41 @@ trait ModelHelperTrait
             );
         }
     }
+
+    /*
+    Possibilities for $this->model when getting to $this->modelResponse():
+
+    CASE 1:
+
+        $this->model->magicSearch();
+            Stores collection of models in $this->model->magicResult;
+
+        ($this->model instanceof Model == true)
+
+        $this->model->extract();
+            returns $this->model->magicResult as [$model1, $model2, ...]
+
+    CASE 2:
+
+        $this->model->where()->get();
+            Is a collection of models.
+
+        (is_null($this->model->magicResult) == true)
+
+        ($this->model instanceof Collection == true)
+
+        Cannot do $this->model->extract();  (But good to return as-is)
+
+    CASE 3:
+
+        $this->model->where()->firstOrFail();
+            Is a model.
+
+        (is_null($this->model->magicResult) == true)
+
+        ($this->model instanceof Model == true)
+
+        $this->model->extract()
+            returns [$this->model]
+     */
 }

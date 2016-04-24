@@ -19,14 +19,11 @@ abstract class CustomController extends BaseController
 
     protected $rq;
 
-    protected $request;
-
     protected $rsp;
 
     public function __construct()
     {
         $this->rq = app()->request;
-        $this->request = $this->rq;
     }
 
     protected function success()
