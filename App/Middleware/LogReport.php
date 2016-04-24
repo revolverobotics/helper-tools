@@ -41,14 +41,19 @@ class LogReport
             return;
         }
 
-        if ($this->hasContentTypeHtml($this->response))
+        if ($this->hasContentTypeHtml($this->response)) {
             return; // don't log html responses
+        }
 
-        if ($this->responseOk() && !$this->debugMode())
+        if ($this->responseOk() && !$this->debugMode()) {
             return;
+        }
 
         try {
             $this->makeFinalLog();
+
+            $this->enableANSIOutput($this->finalLog);
+
             $this->outputFinalLog();
         } catch (\Exception $e) {
             \Log::critical($e->getMessage());
@@ -69,9 +74,10 @@ class LogReport
 
         $this->finalLog .= PHP_EOL.PHP_EOL.print_r($this->request->all(), true);
 
-        if (count($this->queryLog) > 0)
+        if (count($this->queryLog) > 0) {
             $this->finalLog .= PHP_EOL.'Queries:'.PHP_EOL.
                 print_r($this->queryLog, true);
+        }
 
         $this->finalLog .= PHP_EOL.'------------- Response -------------'.
             PHP_EOL.PHP_EOL.$this->response->headers;
@@ -101,28 +107,100 @@ class LogReport
         }
     }
 
-    private function hasContentTypeHtml($component)
+    protected function hasContentTypeHtml($component)
     {
         $contentType = $component->headers->get('Content-Type');
 
-        if (str_contains($contentType, 'text/html'))
+        if (str_contains($contentType, 'text/html')) {
             return true;
+        }
 
         return false;
     }
 
-    private function responseOk()
+    protected function enableANSIOutput(&$string)
     {
-        if ($this->response->status() == 200)
+        if (!env('ANSI', false)) {
+            return false;
+        }
+
+        // Output regular text
+        $string = "\033[0;32m".$string;
+
+        // Colorize line numbers, e.g.: (360)
+        $string = preg_replace(
+            "/\([0-9]*\)/",
+            "\033[1;33m$0\033[0;32m",
+            $string
+        );
+
+        // Colorize trace indexes, .e.g.: #36
+        $string = preg_replace(
+            "/\#[0-9]*/",
+            "\033[1;37m$0\033[0;32m",
+            $string
+        );
+
+        // Colorize forward slashes
+        $string = preg_replace(
+            "/\//",
+            "\033[0;36m$0\033[0;32m",
+            $string
+        );
+
+        // Highlight line numbers
+        $string = preg_replace(
+            "/\:[0-9]*\"/",
+            "\033[4;33m$0\033[0;32m",
+            $string
+        );
+
+        // Hide double quotes
+        $string = preg_replace(
+            "/\"/",
+            "\033[8;32m$0\033[0;32m",
+            $string
+        );
+
+        // Hide commas at line endings
+        $string = preg_replace(
+            "/,\n/",
+            "\033[8;32m$0\033[0;32m",
+            $string
+        );
+
+        // Highlight "__ End of Log __"
+        // $string = preg_replace(
+        //     "/(_*) End of Log (_*)/",
+        //     "\033[7;33m$0\033[0;32m",
+        //     $string
+        // );
+
+        // Replace double backslashes
+        $string = str_replace('\\\\', '\\', $string);
+
+        /**
+         * Highlight prompts, e.g., "[TIMESTAMP] testing.DEBUG:"
+         * We can't color them manually b/c they're
+         * not actually part of the Log.
+         */
+        $string = $string."\033[0;37m\033[41m";
+    }
+
+    protected function responseOk()
+    {
+        if ($this->response->status() == 200) {
             return true;
+        }
 
         return false;
     }
 
-    private function debugMode()
+    protected function debugMode()
     {
-        if (env('APP_DEBUG', false))
+        if (env('APP_DEBUG', false)) {
             return true;
+        }
 
         return false;
     }

@@ -19,11 +19,19 @@ abstract class CustomController extends BaseController
 
     protected $rq;
 
+    protected $request;
+
     protected $rsp;
 
     public function __construct()
     {
         $this->rq = app()->request;
+        $this->request = $this->rq;
+    }
+
+    protected function success()
+    {
+        return $this->returnJson(200, $this->rsp);
     }
 
     protected function makeResponse(array $data, string $message = "")
@@ -41,12 +49,17 @@ abstract class CustomController extends BaseController
             $data[$this->appName()] = 'debug';
             $data['url'] = $this->rq->fullUrl();
             $data['SQL Queries'] = count(\DB::getQueryLog());
-            $data['response_time'] = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+            $data['response_time'] = microtime(true) - LARAVEL_START;
         }
 
         $headers['Content-Type'] = 'application/json';
 
-        return response()->json($data, $code, $headers, JSON_PRETTY_PRINT);
+        return response()->json(
+            $data,
+            $code,
+            $headers,
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
+        );
     }
 
     protected function appName()
