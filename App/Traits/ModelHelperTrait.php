@@ -28,7 +28,7 @@ trait ModelHelperTrait
         if (is_null($this->queryable)) {
             throw new \FatalErrorException(
                 'Please specify columns available '.
-                'for Magic Search in $queryable.'
+                'for Magic Search in Model::$queryable.'
             );
         }
 
@@ -61,6 +61,24 @@ trait ModelHelperTrait
         return $result;
     }
 
+    // NOTE: Anything below this line is unused...
+    // Really should be in an extended version of
+    // LengthAwarePaginator
+
+    /**
+     * Returns any models found from the magicSearch method
+     *
+     * @return Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getMagicResult()
+    {
+        if (!isset($this->magicResult)) {
+            return false;
+        }
+
+        return $this->magicResult;
+    }
+
     /**
      * Returns any models found with the magicSearch method as an array.
      *
@@ -81,7 +99,7 @@ trait ModelHelperTrait
             return $this->getMagicResultArray($keyName);
         }
 
-        return [$this->toArray()];
+        return $this->toArray();
     }
 
     /**
@@ -130,20 +148,6 @@ trait ModelHelperTrait
     }
 
     /**
-     * Returns any models found from the magicSearch method
-     *
-     * @return Illuminate\Pagination\LengthAwarePaginator
-     */
-    public function getMagicResult()
-    {
-        if (!isset($this->magicResult)) {
-            return false;
-        }
-
-        return $this->magicResult;
-    }
-
-    /**
      * Counts the number of models we expected to find and
      * throws an exception if it is not correct.
      *
@@ -170,35 +174,27 @@ trait ModelHelperTrait
 
     CASE 1:
 
-        $this->model->magicSearch();
-            Stores collection of models in $this->model->magicResult;
-
-        ($this->model instanceof Model == true)
-
-        $this->model->extract();
-            returns $this->model->magicResult as [$model1, $model2, ...]
+        $this->model = $this->model->magicSearch();
+            returns Illuminate\Pagination\LengthAwarePaginator;
 
     CASE 2:
 
-        $this->model->where()->get();
+        $this->model = $this->model->where()->get();
             Is a collection of models.
 
-        (is_null($this->model->magicResult) == true)
+        $this->model->magicResult = null
 
-        ($this->model instanceof Collection == true)
-
-        Cannot do $this->model->extract();  (But good to return as-is)
+        $this->model =
+            Illuminate\Database\Eloquent\Collection;
 
     CASE 3:
 
-        $this->model->where()->firstOrFail();
-            Is a model.
+        $this->model = $this->model->where()->firstOrFail();
 
-        (is_null($this->model->magicResult) == true)
+        $this->model->magicResult = null
 
-        ($this->model instanceof Model == true)
+        $this->model =
+            \Illuminate\Database\Eloquent\Model
 
-        $this->model->extract()
-            returns [$this->model]
      */
 }
