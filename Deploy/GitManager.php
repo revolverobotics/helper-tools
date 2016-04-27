@@ -219,7 +219,7 @@ class GitManager
 
     public function addFlag($flag)
     {
-        switch($flag) {
+        switch ($flag) {
             case '-f':
                 $lookup = '/git\s\w*/';
                 $insert = '-f';

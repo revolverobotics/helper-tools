@@ -35,7 +35,7 @@ trait ServerDeployTrait
             'ls -la .env.testing'
         ];
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) {
+        SSH::into($this->git->remote)->run($commandArray, function ($line) {
             if (strpos($line, 'cannot access') !== false) {
                 $this->outError('Couldn\'t find .env file on remote: '.$line);
                 throw new \Exception('Aborting.');
@@ -62,13 +62,13 @@ trait ServerDeployTrait
 
         $count = 0;
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$count
         ) {
             $count++;
             $line = rtrim($line);
 
-            switch($count) {
+            switch ($count) {
                 case 1:
                     $this->out(
                         'Verifying remote directory...',
@@ -148,9 +148,9 @@ trait ServerDeployTrait
 
         $count = 0;
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$count
-        ){
+        ) {
             $count++;
             $line = rtrim($line);
 
@@ -185,7 +185,7 @@ trait ServerDeployTrait
 
         $migrationStatus = "";
 
-        SSH::into('dev')->run($commandArray, function($line) use (
+        SSH::into('dev')->run($commandArray, function ($line) use (
             &$migrationStatus
         ) {
             $migrationStatus .= $line;
@@ -195,7 +195,7 @@ trait ServerDeployTrait
 
         $migrationStatus = explode("\n", $migrationStatus);
 
-        foreach($migrationStatus as $migration) {
+        foreach ($migrationStatus as $migration) {
             $status = substr($migration, 0, 8);
             if (strpos($status, 'N') !== false) {
                 $this->dbMigrations = true;
@@ -219,9 +219,9 @@ trait ServerDeployTrait
 
         $this->out('Running unit tests...', 'info', "\n . ");
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$count
-        ){
+        ) {
             $count++;
             $line = rtrim($line);
             // $this->out('Backing up database...', 'info', "\n . ");
@@ -252,9 +252,9 @@ trait ServerDeployTrait
             'cat .env'
         ];
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$dbCredentials
-        ){
+        ) {
             $line = rtrim($line);
 
             $this->out(
@@ -272,7 +272,7 @@ trait ServerDeployTrait
                 }
             }
 
-            foreach($dbCredentials as $env) {
+            foreach ($dbCredentials as $env) {
                 if (is_null($env)) {
                     $this->out('Couldn\'t get all SQL '.
                         'credentials. Check remote .env file.', 'error');
@@ -307,7 +307,7 @@ trait ServerDeployTrait
 
         $count = 0;
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$count
         ) {
             $line = rtrim($line);
@@ -355,7 +355,7 @@ trait ServerDeployTrait
 
         $backupFound = false;
 
-        foreach($localBackupList as $line) {
+        foreach ($localBackupList as $line) {
             if (strpos($line, $this->dbBackup) !== false) {
                 $backupFound = true;
             }
@@ -392,7 +392,7 @@ trait ServerDeployTrait
         try {
             SSH::into($this->git->remote)->run(
                 $commandArray,
-                function($line) use (&$count) {
+                function ($line) use (&$count) {
                     $this->out(trim($line));
                     if (strpos($line, 'SQLSTATE') !== false) {
                         throw new \Exception('Failure.');
@@ -438,13 +438,13 @@ trait ServerDeployTrait
 
         $count = 0;
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$count
         ) {
             $count++;
             $line = rtrim($line);
 
-            switch($count) {
+            switch ($count) {
                 case 1:
                     $this->out(
                         '...',

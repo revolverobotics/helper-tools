@@ -12,8 +12,9 @@ trait VersionTrait
     {
         $version = $this->git->getTags();
 
-        if (count($version) < 1)
+        if (count($version) < 1) {
             $version[0] = "0.0.0";
+        }
 
         $this->currentVersion = array_pop($version);
 
@@ -23,13 +24,13 @@ trait VersionTrait
 
     protected function incrementVersion()
     {
-        if ($this->argument('version') == 'none')
+        if ($this->argument('version') == 'none') {
             return false;
+        }
 
         $version = $this->convertToInt(explode(".", $this->currentVersion));
 
-        switch($this->argument('version'))
-        {
+        switch ($this->argument('version')) {
             case 'none':
                 break;
 
@@ -93,8 +94,9 @@ trait VersionTrait
 
     protected function convertToInt(array $array)
     {
-        foreach ($array as &$element)
+        foreach ($array as &$element) {
             $element = intval($element);
+        }
 
         return $array;
     }
