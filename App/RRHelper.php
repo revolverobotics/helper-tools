@@ -37,7 +37,7 @@ class RRHelper
         }
     }
 
-    public static function arrayifyModels($object, string $plural)
+    public static function arrayifyData(&$object, string $plural)
     {
         // echo gettype($object);
 
@@ -66,6 +66,9 @@ class RRHelper
 
             $staticObject['total'] = count($staticObject[$plural]);
         }
-        return $staticObject;
+
+        $object = $staticObject;
+
+        return $object;
     }
 }
