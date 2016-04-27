@@ -2,21 +2,15 @@
 
 namespace App\Submodules\ToolsLaravelMicroservice\App\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Submodules\ToolsLaravelMicroservice\App\Traits\BaseUnitTestTrait;
 
 use Cache;
 
-class BaseUnitTestController extends Controller {
-
+class BaseUnitTestController extends CustomController
+{
     use BaseUnitTestTrait;
-
-    public function __construct(Request $request)
-    {
-        $this->initialize($request);
-    }
 
     public function postPreTest()
     {

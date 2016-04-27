@@ -6,14 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
 use \App\Submodules\ToolsLaravelMicroservice\App\Traits\RequestValidatorTrait;
-use \App\Submodules\ToolsLaravelMicroservice\App\Traits\RequestResponseTrait;
 
 abstract class CustomController extends BaseController
 {
-    use RequestResponseTrait,
-        AuthorizesRequests,
+    use AuthorizesRequests,
         DispatchesJobs,
         RequestValidatorTrait;
 

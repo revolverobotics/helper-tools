@@ -8,19 +8,20 @@ trait BaseUnitTestTrait
 
     protected function verifyTestKey()
     {
-        if (!$this->request->has('test_key')) {
+        if (!$this->rq->has('test_key')) {
             throw new \BadRequestHttpException('[test_key] must be provided.');
         }
 
-        $inputTestKey = $this->request->input('test_key', str_random(32));
+        $inputTestKey = $this->rq->input('test_key', str_random(32));
         $envTestKey = env('TEST_KEY', str_random(32));
 
         if (is_null(env('TEST_KEY', null))
-            || $inputTestKey != $envTestKey) {
-                throw new \FatalErrorException(
-                    'Provided [test_key] is invalid.'
-                );
-            }
+            || $inputTestKey != $envTestKey
+        ) {
+            throw new \FatalErrorException(
+                'Provided [test_key] is invalid.'
+            );
+        }
     }
 
     protected function runCustomChecks()
