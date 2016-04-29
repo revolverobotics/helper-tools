@@ -34,9 +34,9 @@ class BackendAuthorizer
         $grant = Cache::tags(['grants'])->get($OAuthToken);
 
         if (is_null($grant)) {
-
             $response = $this->connection->post(
-                'oauth', ['access_token' => $OAuthToken]
+                'oauth',
+                ['access_token' => $OAuthToken]
             );
 
             if ($response->code() != 200) {

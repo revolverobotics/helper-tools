@@ -17,13 +17,11 @@ class LogInitialize
     public function handle($request, Closure $next)
     {
         if (strpos($request->url(), 'admin/log-viewer') === false) {
-
-			$nowformatted = date("Y-m-d H:i:s", time());
+            $nowformatted = date("Y-m-d H:i:s", time());
 
             $logStart = $request;
 
-            app()->singleton('appLog', function($app) use ($logStart)
-            {
+            app()->singleton('appLog', function ($app) use ($logStart) {
                 return ($logStart);
             });
 

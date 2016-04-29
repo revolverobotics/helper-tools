@@ -108,7 +108,7 @@ class Push extends Command
             array_push($this->envVars, strtoupper($remote).'_HOST');
         }
 
-        foreach($this->envVars as $var) {
+        foreach ($this->envVars as $var) {
             if (is_null(env($var, null))) {
                 $this->outError('Missing env var: '.$var);
                 throw new \Exception('Aborting.');
@@ -119,19 +119,22 @@ class Push extends Command
 
         if ($this->option('build')
             && !env('JENKINS_KEY', false)
-        )
+        ) {
             throw new \Exception('Cannot push to Jenkins, no JENKINS_KEY '.
                 'defined in .env file.');
+        }
 
         if ($this->argument('remote') != 'origin'
             && !env('DEPLOY_KEY', false)
-        )
+        ) {
             throw new \Exception('Cannot push to '.$this->git->remote.', no '.
                 'DEPLOY_KEY defined in .env file.');
+        }
 
-        if ($this->argument('remote') == 'jenkins')
+        if ($this->argument('remote') == 'jenkins') {
             throw new \Exception('Manual push to Jenkins server disabled.'.
                 PHP_EOL.'Push to origin with the -b option to run a build.');
+        }
 
         // Make sure the app_root local disk exists in config/filesystems.php
         if (!array_key_exists('app_root', config('filesystems.disks'))) {
@@ -151,7 +154,7 @@ class Push extends Command
 
         $found = false;
 
-        foreach($middleware as $ware) {
+        foreach ($middleware as $ware) {
             $check = strpos($ware, 'App\Submodules\ToolsLaravelMicroservice'.
                 '\App\Middleware\CheckForMaintenanceMode');
             if ($check !== false) {
@@ -188,7 +191,7 @@ class Push extends Command
         $gitModuleFile = Storage::disk('app_root')->get('.gitmodules');
         $gitModuleFile = explode("\n", $gitModuleFile);
 
-        foreach($gitModuleFile as $line) {
+        foreach ($gitModuleFile as $line) {
             if (!str_contains($line, "[submodule ")) {
                 continue;
             }
@@ -245,7 +248,7 @@ class Push extends Command
 
         $which = $this->choice('What now?', $postPushChoices);
 
-        switch($which) {
+        switch ($which) {
             case 'Exit':
                 exit;
 

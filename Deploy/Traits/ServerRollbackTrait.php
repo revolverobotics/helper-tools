@@ -44,7 +44,7 @@ trait ServerRollbackTrait
                 ' rev-parse --verify HEAD',
         ];
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) {
+        SSH::into($this->git->remote)->run($commandArray, function ($line) {
             $this->out(
                 'Reading current commit in case of rollback...',
                 'info',
@@ -98,7 +98,7 @@ trait ServerRollbackTrait
 
         $this->out('Restoring database from backup...', 'info', "\n . ");
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) {
+        SSH::into($this->git->remote)->run($commandArray, function ($line) {
             $this->out($line);
         });
 
@@ -121,7 +121,7 @@ trait ServerRollbackTrait
         $this->out('Reverting to previous commit...', 'info', "\n . ");
         $this->out('');
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) {
+        SSH::into($this->git->remote)->run($commandArray, function ($line) {
             $this->out($line);
         });
 
@@ -141,7 +141,7 @@ trait ServerRollbackTrait
 
         $this->out('Verifying rolled-back repo...', 'info', "\n . ");
 
-        SSH::into($this->git->remote)->run($commandArray, function($line) {
+        SSH::into($this->git->remote)->run($commandArray, function ($line) {
             $line = trim((string)$line);
 
             if (strpos($line, $this->rollbackCommit) !== false) {

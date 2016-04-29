@@ -19,15 +19,17 @@ class CheckForTestMode
             This is necessary for frontend servers to perform cleanup
             after running their own unit tests
         */
-        if ($request->has('test_key')):
-
-            if (file_exists(base_path() . '/.env.testing'))
+        if ($request->has('test_key')) {
+            if (file_exists(base_path() . '/.env.testing')) {
                 \Dotenv::load(base_path(), '.env.testing');
+            }
 
-            if ($request->input('test_key', 'incorrect') != env('TEST_KEY', 'no key'))
+            $inputKey = $request->input('test_key', str_random(32));
+            $envKey = env('TEST_KEY', str_random(32));
+            if ($inputKey != $envKey) {
                 throw new \FatalErrorException('Get outta here.');
-
-        endif;
+            }
+        }
 
         return $next($request);
     }

@@ -36,8 +36,7 @@ trait OutputTrait
         }
 
         if (is_array($output)) {
-            foreach($output as $line)
-            {
+            foreach ($output as $line) {
                 $this->$outputType($indent.$line);
                 $this->outputToLog($indent.$line);
             }
