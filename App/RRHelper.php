@@ -62,6 +62,8 @@ class RRHelper
             } elseif ($object instanceof Collection) {
                 // Returned from ->get()
                 $staticObject[$plural] = $object->toArray();
+                // Reset the key indices in case we filtered some elements out.
+                $staticObject[$plural] = array_values($staticObject[$plural]);
             }
 
             $staticObject['total'] = count($staticObject[$plural]);
