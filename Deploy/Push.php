@@ -180,7 +180,7 @@ class Push extends Command
             return;
         }
 
-        if (!file_exists(base_path().'/.gitmodules')) {
+        if (!Storage::disk('app_root')->exists('.gitmodules')) {
             $this->outError('No submodules found for this app.');
             throw new \Exception('Aborting.');
         }
