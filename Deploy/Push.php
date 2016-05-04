@@ -33,7 +33,6 @@ class Push extends Command
         {--f|force : Force push the git repository}
         {--l|leave-untracked : Leave untracked files behind (do not auto-add)}
         {--s|submodule : Commit and push for a project\'s submodule(s)}
-        {--t|tag : Update tag version}
         ';
 
     /**

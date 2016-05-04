@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendRequest;
+use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendResponse;
+use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
 use \App\Submodules\ToolsLaravelMicroservice\App\Traits\RequestValidatorTrait;
 
 abstract class CustomController extends BaseController
@@ -17,6 +20,8 @@ abstract class CustomController extends BaseController
     protected $rq;
 
     protected $rsp;
+
+    protected $backendResponse;
 
     public function __construct()
     {
@@ -52,6 +57,25 @@ abstract class CustomController extends BaseController
             $data,
             $code,
             $headers,
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
+        );
+    }
+
+    protected function backendResponse()
+    {
+        if ($this->backendRequest instanceof BackendRequest) {
+            $this->backendResponse = new BackendResponse(
+                $this->backendRequest->code(),
+                $this->backendRequest->getResponse()
+            );
+        }
+
+        // Exception handling can be found in BackendRequest::send()
+
+        return response()->json(
+            $this->backendResponse->content(),
+            200,
+            [],
             JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
         );
     }

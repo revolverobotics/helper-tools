@@ -125,7 +125,7 @@ trait ServerPushTrait
                     'info'
                 );
             } else {
-                $this->out('Push aborted.', 'error');
+                $this->outError('Push aborted.');
                 throw new \Exception('Aborting.');
             }
         } else {
@@ -141,8 +141,6 @@ trait ServerPushTrait
 
         $this->out('');
 
-        $this->pushTags();
-
         $this->git->command = 'git push '.$this->git->remote.' '.
             $this->git->branch;
 
@@ -155,7 +153,7 @@ trait ServerPushTrait
         }
 
         if ($this->isOrigin() && $this->argument('version') != 'none') {
-            $this->git->addFlag('--tags');
+            $this->pushTags();
         }
 
         $this->git->exec();
@@ -163,10 +161,8 @@ trait ServerPushTrait
         if ($this->option('build') && $this->isOrigin()) {
             $this->pushJenkins();
         } elseif ($this->option('build') && $this->isRemoteServer()) {
-            $this->out(
-                'Can only build when pushing to origin, skipping.',
-                'error',
-                "\n "
+            $this->outError(
+                'Can only build when pushing to origin, skipping.'
             );
         }
 
@@ -184,6 +180,10 @@ trait ServerPushTrait
     protected function pushTags()
     {
         if ($this->git->branch != 'master' || !$this->isOrigin()) {
+            $this->outError(
+                "Can only tag branch `master`. Skipping version increment."
+            );
+            $this->out('');
             return;
         }
 
@@ -205,6 +205,8 @@ trait ServerPushTrait
             $this->git->updateCurrentTag($this->currentVersion);
             $this->out('');
         }
+
+        $this->git->addFlag('--tags');
     }
 
     protected function pushJenkins()

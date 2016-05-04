@@ -55,7 +55,7 @@ trait VersionTrait
 
         $this->newVersion = implode(".", $version);
 
-        $this->out('New version tag will be:', 'comment', ' ');
+        $this->out('New version tag will be:', 'comment', " \n");
         $this->out($this->newVersion, 'line', "\n\t");
     }
 

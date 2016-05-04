@@ -34,6 +34,14 @@ abstract class BackendModel implements ArrayAccess
     protected $modelName;
 
     /**
+     * Name of the array containing the model
+     * dataset, e.g., 'devices' or 'locations'
+     *
+     * @var string
+     */
+    protected $datasetPlural;
+
+    /**
      * Dataset of the retrieved model
      *
      * @var string
@@ -47,16 +55,16 @@ abstract class BackendModel implements ArrayAccess
      */
     public function __construct()
     {
-        if (is_null($this->service)) {
+        if (is_null($this->service) ||
+            is_null($this->modelName) ||
+            is_null($this->datasetPlural)
+        ) {
             throw new \FatalErrorException(
-                'Model instantiation must provide [$service]'
+                'Model instantiation must provide $service, '.
+                '$modelName, and $datasetPlural.'
             );
         }
-        if (is_null($this->modelName)) {
-            throw new \FatalErrorException(
-                'Model instantiation must provide [$modelName]'
-            );
-        }
+
         $this->connection = new BackendRequest($this->service);
     }
 
@@ -78,7 +86,9 @@ abstract class BackendModel implements ArrayAccess
     {
         $this->modelData = $this->pipe('get', $this->modelName, $data);
 
-        return $this->modelData;
+        return [
+            $this->datasetPlural => $this->modelData[$this->datasetPlural]
+        ];
     }
 
     public function fresh(array $data)
@@ -90,21 +100,27 @@ abstract class BackendModel implements ArrayAccess
     {
         $this->modelData = $this->pipe('put', $this->modelName, $data);
 
-        return $this->modelData;
+        return [
+            $this->datasetPlural => $this->modelData[$this->datasetPlural]
+        ];
     }
 
     public function update(array $data)
     {
         $this->modelData = $this->pipe('patch', $this->modelName, $data);
 
-        return $this->modelData;
+        return [
+            $this->datasetPlural => $this->modelData[$this->datasetPlural]
+        ];
     }
 
     public function delete(array $data)
     {
         $this->modelData = $this->pipe('delete', $this->modelName, $data);
 
-        return $this->modelData;
+        return [
+            $this->datasetPlural => $this->modelData[$this->datasetPlural]
+        ];
     }
 
     /**

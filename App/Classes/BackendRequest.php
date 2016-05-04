@@ -3,6 +3,7 @@
 namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
 
 use GuzzleHttp\Client;
+use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
 
 class BackendRequest
 {
@@ -213,6 +214,20 @@ class BackendRequest
     }
 
     /**
+     * Make an ANY request
+     *
+     * @param string $path
+     * @param array $queryData
+     * @return array
+     */
+    public function any(string $path, array $queryData, string $method)
+    {
+        $this->method = $method;
+
+        return $this->send($path, $queryData);
+    }
+
+    /**
      * Send the request
      *
      * @return array
@@ -234,6 +249,13 @@ class BackendRequest
 
         $this->response = json_decode($rawResponse->getBody(), true);
         $this->code = $rawResponse->getStatusCode();
+
+        if ($this->code != 200) {
+            throw new BackendException(
+                $this->code,
+                json_encode($this->response)
+            );
+        }
 
         return $this->response;
     }
