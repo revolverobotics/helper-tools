@@ -45,7 +45,7 @@ class LogReport
             return; // don't log html responses
         }
 
-        if ($this->responseOk() && !$this->debugMode()) {
+        if ($this->responseOk() && $this->suppressOk()) {
             return;
         }
 
@@ -190,6 +190,15 @@ class LogReport
     protected function responseOk()
     {
         if ($this->response->status() == 200) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function suppressOk()
+    {
+        if (env('DEBUG_SUPPRESS_200', false)) {
             return true;
         }
 
