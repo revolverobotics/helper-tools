@@ -125,56 +125,56 @@ class LogReport
         }
 
         // Output regular text
-        $string = "\033[0;37m\033[40m".$string;
+        $string = "\033[0;32m\033[40m".$string;
 
         // Colorize line numbers, e.g.: (360)
         $string = preg_replace(
             "/\([0-9]*\)/",
-            "\033[1;33m$0\033[0;39m\033[40m",
+            "\033[1;33m$0\033[0;32m\033[40m",
             $string
         );
 
         // Colorize trace indexes, .e.g.: #36
         $string = preg_replace(
             "/\#[0-9]*/",
-            "\033[1;37m$0\033[0;39m\033[40m",
+            "\033[1;37m$0\033[0;32m\033[40m",
             $string
         );
 
         // Colorize forward slashes
         $string = preg_replace(
             "/\//",
-            "\033[0;36m$0\033[0;39m\033[40m",
+            "\033[0;36m$0\033[0;32m\033[40m",
             $string
         );
 
         // Highlight line numbers
         $string = preg_replace(
             "/\:[0-9]*\"/",
-            "\033[4;33m$0\033[0;39m\033[40m",
+            "\033[4;33m$0\033[0;32m\033[40m",
             $string
         );
 
         // Hide double quotes
         $string = preg_replace(
             "/\"/",
-            "\033[8;32m$0\033[0;39m\033[40m",
+            "\033[8;32m$0\033[0;32m\033[40m",
             $string
         );
 
         // Hide commas at line endings
         $string = preg_replace(
             "/,\n/",
-            "\033[8;32m$0\033[0;39m\033[40m",
+            "\033[8;32m$0\033[0;32m\033[40m",
             $string
         );
 
         // Highlight "__ End of Log __"
-        // $string = preg_replace(
-        //     "/(_*) End of Log (_*)/",
-        //     "\033[7;33m$0\033[0;39m",
-        //     $string
-        // );
+        $string = preg_replace(
+            "/(_*) End of Log (_*)/",
+            "\033[7;33m$0\033[0;32m\033[40m",
+            $string
+        );
 
         // Replace double backslashes
         $string = str_replace('\\\\', '\\', $string);
