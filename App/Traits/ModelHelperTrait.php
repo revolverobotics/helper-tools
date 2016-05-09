@@ -54,7 +54,9 @@ trait ModelHelperTrait
             }
         }
 
-        $result = $model->paginate($pagination);
+        if ($pagination > 0) {
+            $result = $model->paginate($pagination);
+        }
 
         $this->magicResult = $result;
 

@@ -69,6 +69,10 @@ class Handler extends ExceptionHandler
 
             $this->addDebugData($e, $response);
 
+            if (!isset($response['statusCode'])) {
+                $response['statusCode'] = '0';
+            }
+
             return response()->json(
                 $response,
                 $response['statusCode'],

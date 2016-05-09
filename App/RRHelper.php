@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+use Log;
+
 class RRHelper
 {
     public static function debugLog($resource, $info)
     {
         if (env('APP_DEBUG', false)) {
-            \Log::info("[".$resource."] ".$info);
+            Log::info("[".$resource."] ".$info);
         }
     }
 
@@ -33,7 +35,7 @@ class RRHelper
         if (is_array($input) || is_string($input)) {
             array_push($currentString->log, $input);
         } else {
-            \Log::info($input);
+            Log::info($input);
         }
     }
 
