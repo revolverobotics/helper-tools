@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
             $this->addDebugData($e, $response);
 
             if (!isset($response['statusCode'])) {
-                $response['statusCode'] = '0';
+                $response['statusCode'] = '500';
             }
 
             return response()->json(
