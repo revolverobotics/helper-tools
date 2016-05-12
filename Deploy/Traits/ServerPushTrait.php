@@ -35,16 +35,24 @@ trait ServerPushTrait
 
             $this->git->setRemote($this->anticipate(
                 'Push to which remote?',
-                $remotes
+                array_merge(['<abort>'], $remotes),
+                '<abort>'
             ));
         } else {
             $this->git->setRemote($this->argument('remote'));
+        }
+
+        if ($this->git->remote == '<abort>') {
+            exit;
         }
     }
 
     protected function outputCurrentBranch()
     {
-        $this->out('On branch ['.$this->git->getCurrentBranch().']', 'comment');
+        $this->out(
+            'On branch [<cyan>'.$this->git->getCurrentBranch().'</cyan>]',
+            'comment'
+        );
     }
 
     protected function commitRepo()
@@ -99,7 +107,12 @@ trait ServerPushTrait
                     throw new \Exception('Aborting.');
                 }
             } else {
-                $commitMessage = $this->ask('Commit Message');
+                $commitMessage = $this->ask('Commit Message', '<abort>');
+
+                if ($commitMessage == '<abort>') {
+                    exit;
+                }
+
                 $this->git->commit($commitMessage);
             }
         }
@@ -120,7 +133,7 @@ trait ServerPushTrait
 
             if ($this->confirm($warning)) {
                 $this->out(
-                    'Pushing branch ['.$this->git->branch.'] to '.
+                    'Pushing branch [<cyan>'.$this->git->branch.'</cyan>] to '.
                     'production server, hold on to your butts...',
                     'info'
                 );
@@ -129,8 +142,12 @@ trait ServerPushTrait
                 throw new \Exception('Aborting.');
             }
         } else {
-            $this->out('Pushing branch ['.$this->git->branch.
-                '] to remote ['.$this->git->remote.']', 'comment');
+            $this->out(
+                'Pushing branch [<cyan>'.$this->git->branch.
+                '</cyan>] to remote [<cyan>'.$this->git->remote.
+                '</cyan>]',
+                'comment'
+            );
         }
 
         if ($this->isRemoteServer()) {

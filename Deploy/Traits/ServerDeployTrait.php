@@ -5,6 +5,9 @@ namespace App\Submodules\ToolsLaravelMicroservice\Deploy\Traits;
 use SSH;
 use App\Submodules\ToolsLaravelMicroservice\Deploy\GitManager;
 
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
 trait ServerDeployTrait
 {
     protected $dbCredentials;
@@ -16,38 +19,119 @@ trait ServerDeployTrait
     protected function checkEnvFiles()
     {
         $this->out(
-            'Beginning server deployment on ['.$this->git->remote.']...',
+            "Beginning server deployment on ".
+            "[<cyan>{$this->git->remote}</cyan>]...",
             'comment',
             "\n "
         );
         $this->out('');
 
+        $this->checkEnvFile('.env');
+        $this->checkEnvFile('.env.testing');
+
+        exit;
+    }
+
+    protected function checkEnvFile($which)
+    {
         $this->out(
-            'Checking remote for .env and .env.testing files...',
+            "Checking <white>{$which}</white> file ".
+                "diff between local & remote...",
             'info',
             ' . '
         );
 
+        // First check for file existence:
         $commandArray = [
             'export TERM=vt100',
             'cd '.env('REMOTE_WORKTREE'),
-            'ls -la .env',
-            'ls -la .env.testing'
+            'ls -la '.$which
         ];
 
         SSH::into($this->git->remote)->run($commandArray, function ($line) {
             if (strpos($line, 'cannot access') !== false) {
-                $this->outError('Couldn\'t find .env file on remote: '.$line);
+                $this->outError("Couldn't find {$which} on remote: {$line}");
                 throw new \Exception('Aborting.');
             }
         });
 
-        $this->out('.env and .env.testing are present', 'line', ' ✓ ');
+        // Now check that files have matching variables:
+        $localVars = [];
+        $remoteVars = [];
+
+        $localProcess = new Process('cat '.$which);
+        $localProcess->setWorkingDirectory(base_path());
+        $localProcess->run(function ($type, $buffer) use (&$localVars) {
+            $lines = explode("\n", $buffer);
+            foreach ($lines as $line) {
+                $splitLine = explode("=", $line);
+                if (count($splitLine) > 1) {
+                    array_push($localVars, $splitLine[0]);
+                }
+            }
+        });
+
+        SSH::into($this->git->remote)->run(
+            [
+                'cd '.env('REMOTE_WORKTREE'),
+                'cat '.$which
+            ],
+            function ($contents) use (&$remoteVars) {
+                $lines = explode("\n", $contents);
+                foreach ($lines as $line) {
+                    $splitLine = explode("=", $line);
+                    if (count($splitLine) > 1) {
+                        array_push($remoteVars, $splitLine[0]);
+                    }
+                }
+            }
+        );
+
+
+        $diff = array_diff($localVars, $remoteVars);
+
+        if (count($diff) > 0) {
+            $tabulated = [];
+
+            function addToTabulated($array, &$tabulated, $index, $max)
+            {
+                for ($i = 0; $i < $max; $i++) {
+                    if (!isset($array[$i])) {
+                        $array[$i] = '';
+                    }
+                }
+
+                foreach ($array as $key => $value) {
+                    if (!isset($tabulated[$key])) {
+                        $tabulated[$key] = [];
+                    }
+                    $tabulated[$key][$index] = $value;
+                }
+            }
+
+            $max = max([count($localVars), count($remoteVars)]);
+            addToTabulated($localVars, $tabulated, 0, $max);
+            addToTabulated($remoteVars, $tabulated, 1, $max);
+            addToTabulated($diff, $tabulated, 2, $max);
+
+            print_r($tabulated);
+            $this->table(
+                ["Local {$which} vars", "Remote {$which} vars", "Diff"],
+                $tabulated
+            );
+
+            if (!$this->confirm(
+                "Local {$which} doesn't match remote. Continue?",
+                false
+            )) {
+                exit;
+            }
+        }
 
         $this->out(
-            "\nFIXME: We should write a pre-check to make sure local .env and".
-            'remote .env (and .env.testing) have the same set of variables',
-            'comment'
+            "{$which} match (or skip) confirmed by user\n",
+            'line',
+            ' ✓ '
         );
     }
 

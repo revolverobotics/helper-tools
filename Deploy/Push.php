@@ -3,8 +3,6 @@
 namespace App\Submodules\ToolsLaravelMicroservice\Deploy;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 use SSH;
 use Storage;
@@ -33,6 +31,7 @@ class Push extends Command
         {--f|force : Force push the git repository}
         {--l|leave-untracked : Leave untracked files behind (do not auto-add)}
         {--s|submodule : Commit and push for a project\'s submodule(s)}
+        {--m|skip-migrations : Don\'t run any pending migrations}
         ';
 
     /**
