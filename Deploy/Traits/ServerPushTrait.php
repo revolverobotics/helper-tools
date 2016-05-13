@@ -244,9 +244,8 @@ trait ServerPushTrait
 
         $this->git->command = 'git push jenkins '.$this->git->branch;
 
-        if ($this->option('force') || $this->git->amend) {
-            $this->git->addFlag('-f');
-        }
+        // Always force
+        $this->git->addFlag('-f');
 
         $this->git->addDeployKey('jenkins');
 
