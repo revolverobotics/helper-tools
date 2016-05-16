@@ -28,8 +28,6 @@ trait ServerDeployTrait
 
         $this->checkEnvFile('.env');
         $this->checkEnvFile('.env.testing');
-
-        exit;
     }
 
     protected function checkEnvFile($which)
@@ -114,7 +112,6 @@ trait ServerDeployTrait
             addToTabulated($remoteVars, $tabulated, 1, $max);
             addToTabulated($diff, $tabulated, 2, $max);
 
-            print_r($tabulated);
             $this->table(
                 ["Local {$which} vars", "Remote {$which} vars", "Diff"],
                 $tabulated
