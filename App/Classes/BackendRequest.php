@@ -123,6 +123,10 @@ class BackendRequest
     {
         $env = app()->environment();
 
+        if (!is_null(env('VPC_EXTENSION', null))) {
+            return env('VPC_EXTENSION');
+        }
+
         if ($env == 'production') {
             return 'com';
         }
