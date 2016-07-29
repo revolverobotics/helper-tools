@@ -131,7 +131,7 @@ class BackendRequest
             return 'com';
         }
 
-        return 'dev';
+        return 'stage';
     }
 
     /**
@@ -247,7 +247,7 @@ class BackendRequest
 
         $rawResponse = $this->client->request(
             $this->method,
-            $this->baseUrl.'/'.$path,
+            'http://'.$this->baseUrl.'/'.$path,
             $this->payload
         );
 
