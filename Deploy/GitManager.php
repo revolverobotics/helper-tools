@@ -278,10 +278,10 @@ class GitManager
 
         if ($type == 'aws') {
             $key = env('DEPLOY_KEY', null);
-            $insert = 'export GIT_SSH=~/bin/ssh-git && PKEY='.$key.' ';
+            $insert = 'export GIT_SSH=~/bin/ssh-git.sh && PKEY='.$key.' ';
         } elseif ($type == 'jenkins') {
             $key = env('JENKINS_KEY', null);
-            $insert = 'export GIT_SSH=~/bin/ssh-git-jenkins && PKEY='.$key.
+            $insert = 'export GIT_SSH=~/bin/ssh-git.sh && PKEY='.$key.
                 ' ';
         }
 
