@@ -26,7 +26,6 @@ class Push extends Command
         {version=none : patch, minor, or major.  Defaults to no version change}
         {--branch= : Specify a git branch to push to (default is current)}
         {--a|amend : add the --amend flag for Git commit}
-        {--b|build : Send to Jenkins server for CI build}
         {--d|docs : Regenerate documentation if using apidocs NPM}
         {--f|force : Force push the git repository}
         {--l|leave-untracked : Leave untracked files behind (do not auto-add)}
@@ -100,7 +99,7 @@ class Push extends Command
         // Check that _HOST entries exists for our remote servers
         $this->git->command = 'git remote';
         foreach ($this->git->exec() as $remote) {
-            if ($remote == 'origin' || $remote == 'jenkins') {
+            if ($remote == 'origin') {
                 continue;
             }
             array_push($this->envVars, strtoupper($remote).'_HOST');
@@ -115,23 +114,11 @@ class Push extends Command
 
         $this->checkForCustomMaintenanceMode();
 
-        if ($this->option('build')
-            && !env('JENKINS_KEY', false)
-        ) {
-            throw new \Exception('Cannot push to Jenkins, no JENKINS_KEY '.
-                'defined in .env file.');
-        }
-
         if ($this->argument('remote') != 'origin'
             && !env('DEPLOY_KEY', false)
         ) {
             throw new \Exception('Cannot push to '.$this->git->remote.', no '.
                 'DEPLOY_KEY defined in .env file.');
-        }
-
-        if ($this->argument('remote') == 'jenkins') {
-            throw new \Exception('Manual push to Jenkins server disabled.'.
-                PHP_EOL.'Push to origin with the -b option to run a build.');
         }
 
         // Make sure the app_root local disk exists in config/filesystems.php

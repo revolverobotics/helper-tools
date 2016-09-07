@@ -3,8 +3,7 @@ if [ -z "$PKEY" ]; then
 # if PKEY is not specified, run ssh using default keyfile
 ssh "$@"
 else
-ssh -i "$PKEY" ec2-user@"$@"
+ssh -i "$PKEY" "$@"
 fi
 
 #chmod +x this script
-

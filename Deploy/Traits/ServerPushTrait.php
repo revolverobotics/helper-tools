@@ -175,14 +175,6 @@ trait ServerPushTrait
 
         $this->git->exec();
 
-        if ($this->option('build') && $this->isOrigin()) {
-            $this->pushJenkins();
-        } elseif ($this->option('build') && $this->isRemoteServer()) {
-            $this->outError(
-                'Can only build when pushing to origin, skipping.'
-            );
-        }
-
         if ($this->isRemoteServer()) {
             $this->runDeployCommands();
             $this->takeOutOfMaintenanceMode();
@@ -226,37 +218,6 @@ trait ServerPushTrait
         $this->git->addFlag('--tags');
     }
 
-    protected function pushJenkins()
-    {
-        $this->out(
-            'Pushing to Jenkins server for CI build...',
-            'comment',
-            "\n "
-        );
-
-        // $this->out('');
-
-        $this->git->setRemote('jenkins');
-
-        // $this->git->updateCurrentTag($this->currentVersion);
-
-        $this->out('');
-
-        $this->git->command = 'git push jenkins '.$this->git->branch;
-
-        // Always force
-        $this->git->addFlag('-f');
-
-        $this->git->addDeployKey('jenkins');
-
-        // $this->git->addFlag('--tags');
-
-        $this->git->exec();
-
-        $this->out('Repo pushed to Jenkins, check dashboard '.
-            'for build status.', 'comment', "\n ");
-    }
-
     protected function isOrigin()
     {
         if ($this->git->remote == 'origin') {
@@ -266,18 +227,9 @@ trait ServerPushTrait
         return false;
     }
 
-    protected function isBuildServer()
-    {
-        if ($this->git->remote == 'jenkins') {
-            return true;
-        }
-
-        return false;
-    }
-
     protected function isRemoteServer()
     {
-        if ($this->isOrigin() || $this->isBuildServer()) {
+        if ($this->isOrigin()) {
             return false;
         }
 
