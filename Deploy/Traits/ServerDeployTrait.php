@@ -266,7 +266,7 @@ trait ServerDeployTrait
 
         $migrationStatus = "";
 
-        SSH::into('dev')->run($commandArray, function ($line) use (
+        SSH::into($this->git->remote)->run($commandArray, function ($line) use (
             &$migrationStatus
         ) {
             $migrationStatus .= $line;
