@@ -1,0 +1,19 @@
+{
+    "name": "revolverobotics/tools-laravel-microservice",
+    "description": "Common files for the microservices that make up our API",
+    "authors": [
+        {
+            "name": "Timothy Huang",
+            "email": "tim@revolverobotics.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "guzzlehttp/guzzle": "~6.0",
+    },
+    "autoload": {
+        "psr-4": {
+            "Revolve\\Microservice\\": "src/"
+        }
+    },
+}
