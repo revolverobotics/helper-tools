@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
+namespace Revolve\Microservice\Backend;
 
 use ArrayAccess;
-use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendRequest;
+use BackendRequest;
 
 /*
     Provides a base interface for retrieving and updating models from

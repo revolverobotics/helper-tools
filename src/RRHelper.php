@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App;
+namespace Revolve\Microservice;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;

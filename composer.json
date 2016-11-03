@@ -1,6 +1,6 @@
 {
-    "name": "revolverobotics/tools-laravel-microservice",
-    "description": "Common files for the microservices that make up our API",
+    "name": "revolve/tools-laravel-microservice",
+    "description": "Common files for the microservices that make up our API.",
     "authors": [
         {
             "name": "Timothy Huang",
@@ -10,10 +10,18 @@
     "require": {
         "php": ">=5.6.4",
         "guzzlehttp/guzzle": "~6.0",
+        "illuminate/auth": "~5.3",
+        "illuminate/bus": "~5.3",
+        "illuminate/database": "~5.3",
+        "illuminate/http": "~5.3",
+        "illuminate/pagination": "~5.3",
+        "illuminate/routing": "~5.3"
     },
     "autoload": {
         "psr-4": {
             "Revolve\\Microservice\\": "src/"
         }
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

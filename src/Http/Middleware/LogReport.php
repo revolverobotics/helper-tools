@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Middleware;
+namespace Revolve\Microservice\Http\Middleware;
 
 use DB;
 use Log;

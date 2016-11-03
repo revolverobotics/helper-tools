@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Controllers;
+namespace Revolve\Microservice\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendRequest;
-use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendResponse;
-use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
-use \App\Submodules\ToolsLaravelMicroservice\App\Traits\RequestValidatorTrait;
+use Revolve\Microservice\Backend\BackendRequest;
+use Revolve\Microservice\Backend\BackendResponse;
+use Revolve\Microservice\Exceptions\BackendException;
+use Revolve\Microservice\Traits\RequestValidatorTrait;
 
 abstract class CustomController extends BaseController
 {

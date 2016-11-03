@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
+namespace Revolve\Microservice\Backend;
 
 use GuzzleHttp\Client;
-use App\Submodules\ToolsLaravelMicroservice\App\Exceptions\BackendException;
+use Revolve\Microservice\Exceptions\BackendException;
 
 class BackendRequest
 {

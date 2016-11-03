@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Middleware;
+namespace Revolve\Microservice\Http\Middleware;
 
-use Redis;
+use DB;
 use Closure;
 
 class LogInitialize
@@ -25,7 +25,7 @@ class LogInitialize
                 return ($logStart);
             });
 
-            \DB::connection()->enableQueryLog();
+            DB::connection()->enableQueryLog();
         }
         return $next($request);
     }

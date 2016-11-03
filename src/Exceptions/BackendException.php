@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Exceptions;
+namespace Revolve\Microservice\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\RuntimeException;
 
-class BackendException extends \RuntimeException
+class BackendException extends RuntimeException
 {
     private $statusCode;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
+namespace Revolve\Microservice\Backend;
 
 class BackendResponse
 {

@@ -1,15 +1,11 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Middleware;
+namespace Revolve\Microservice\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Http\Exceptions\MaintenanceModeException;;
 
-/**
- * REPLACES THE STOCK LARAVEL MIDDLEWARE OF THE SAME NAME.
- * WE HAVE MODIFIED IT TO ALLOW UNIT TESTS WHEN IN MAINTENANCE MODE.
- */
 class CheckForMaintenanceMode
 {
     /**

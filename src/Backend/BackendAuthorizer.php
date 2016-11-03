@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Classes;
+namespace Revolve\Microservice\Backend;
 
-use App\Submodules\ToolsLaravelMicroservice\App\Classes\BackendRequest;
+use BackendRequest;
 
 use Cache;
 

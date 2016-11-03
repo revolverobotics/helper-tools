@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Exceptions;
+namespace Revolve\Microservice\Exceptions;
 
-use Helper;
 use Exception;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;

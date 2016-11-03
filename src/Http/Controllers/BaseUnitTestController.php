@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Controllers;
-
-use Illuminate\Http\Request;
-
-use App\Submodules\ToolsLaravelMicroservice\App\Traits\BaseUnitTestTrait;
+namespace Revolve\Microservice\Controllers;
 
 use Cache;
+use Illuminate\Http\Request;
+
+use Revolve\Microservice\BackendTraits\BaseUnitTestTrait;
 
 class BaseUnitTestController extends CustomController
 {
