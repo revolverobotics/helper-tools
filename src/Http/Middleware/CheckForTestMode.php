@@ -22,7 +22,7 @@ class CheckForTestMode
         */
 
         if ($request->has('test_key')) {
-            if (file_exists(base_path() . '/.env.testing')) {
+            if (file_exists(app_path() . '/.env.testing')) {
 		$dotenv = new Dotenv(dirname(__DIR__), '.env.testing');
                 $dotenv->load();
             }
