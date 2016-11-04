@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Submodules\ToolsLaravelMicroservice\App\Traits;
+namespace Revolve\Microservice\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;

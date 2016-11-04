@@ -1,6 +1,6 @@
 <?php
 
-namespace Revolve\Microservice\Controllers;
+namespace Revolve\Microservice\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;

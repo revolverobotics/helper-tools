@@ -1,11 +1,11 @@
 <?php
 
-namespace Revolve\Microservice\Controllers;
+namespace Revolve\Microservice\Http\Controllers;
 
 use Cache;
 use Illuminate\Http\Request;
 
-use Revolve\Microservice\BackendTraits\BaseUnitTestTrait;
+use Revolve\Microservice\Traits\BaseUnitTestTrait;
 
 class BaseUnitTestController extends CustomController
 {
