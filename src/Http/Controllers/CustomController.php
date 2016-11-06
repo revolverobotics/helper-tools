@@ -2,6 +2,7 @@
 
 namespace Revolve\Microservice\Http\Controllers;
 
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -44,10 +45,10 @@ abstract class CustomController extends BaseController
     {
         $data['statusCode'] = $code;
 
-        if (env('APP_DEBUG', false)) {
+        if (config('app.debug')) {
             $data[$this->appName()] = 'debug';
             $data['url'] = $this->rq->fullUrl();
-            $data['SQL Queries'] = count(\DB::getQueryLog());
+            $data['SQL Queries'] = count(DB::getQueryLog());
             $data['response_time'] = microtime(true) - LARAVEL_START;
         }
 
