@@ -12,6 +12,8 @@ class LogReport
 
     protected $response;
 
+    protected $statusCode;
+
     protected $queryLog;
 
     protected $finalLog;
@@ -31,6 +33,12 @@ class LogReport
     public function terminate($request, $response)
     {
         $this->init($request, $response);
+
+        if ($this->response instanceof \Illuminate\Http\JsonResponse) {
+            $this->statusCode = $this->response->status();
+        } elseif ($this->response instanceof \Symfony\Component\HttpFoundation\Response) {
+            $this->statusCode = $this->response->getStatusCode();
+        }
 
         // NOTE: just temporary while devving
         if (strpos($request->url(), 'api/1.0/set-status') !== false) {
@@ -69,7 +77,7 @@ class LogReport
 
     protected function makeFinalLog()
     {
-        $this->finalLog = 'Returned '.$this->response->status().
+        $this->finalLog = 'Returned '.$this->statusCode.
             ' | '.app()['appLog'];
 
         $this->finalLog .= PHP_EOL.PHP_EOL.print_r($this->request->all(), true);
@@ -100,8 +108,8 @@ class LogReport
             500 => 'error'
         ];
 
-        if (array_key_exists($this->response->status(), $errorCodes)) {
-            Log::{$errorCodes[$this->response->status()]}($this->finalLog);
+        if (array_key_exists($this->statusCode, $errorCodes)) {
+            Log::{$errorCodes[$this->statusCode]}($this->finalLog);
         } else {
             Log::warning($this->finalLog);
         }
@@ -182,7 +190,7 @@ class LogReport
 
     protected function responseOk()
     {
-        if ($this->response->status() == 200) {
+        if ($this->statusCode == 200) {
             return true;
         }
 
