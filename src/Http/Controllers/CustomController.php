@@ -3,14 +3,13 @@
 namespace Revolve\Microservice\Http\Controllers;
 
 use DB;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Revolve\Microservice\Traits\RequestValidatorTrait;
 use Revolve\Microservice\Backend\BackendRequest;
 use Revolve\Microservice\Backend\BackendResponse;
 use Revolve\Microservice\Exceptions\BackendException;
-use Revolve\Microservice\Traits\RequestValidatorTrait;
 
 abstract class CustomController extends BaseController
 {
@@ -26,7 +25,7 @@ abstract class CustomController extends BaseController
 
     public function __construct()
     {
-        $this->rq = app()->request;
+        $this->rq = request();
     }
 
     protected function success()
