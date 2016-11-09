@@ -2,8 +2,6 @@
 
 namespace Revolve\Microservice\Backend;
 
-use BackendRequest;
-
 use Cache;
 
 /**
@@ -16,50 +14,34 @@ use Cache;
 class BackendAuthorizer
 {
     /**
-     * Connection to the api-service-users microservice
+     * Authenticates a token and returns a list of associated scopes
      *
-     * @var BackendRequest
+     * @param  string   $token
+     *
+     * @return boolean  Returns true if token is valid
      */
-    protected $connection;
-
-    protected $grant;
-
-    public function __construct()
+    public function validateToken($token)
     {
-        $this->connection = new BackendRequest('users');
-    }
+        $tokenFromCache = Cache::tags(['tokens'])->get($token);
 
-    public function lookup(string $OAuthToken)
-    {
-        $grant = Cache::tags(['grants'])->get($OAuthToken);
-
-        if (is_null($grant)) {
-            $response = $this->connection->post(
-                'oauth',
-                ['access_token' => $OAuthToken]
-            );
-
-            if ($response->code() != 200) {
-                throw new \BackendException(
-                    $response->code(),
-                    $response->content()
-                );
-            }
-
-            $grant = $response->content();
+        if (!is_null($tokenFromCache) &&
+            $token == $tokenFromCache['access_token'] &&
+            $tokenFromCache['expires_at'] > time()
+        ) {
+            return [
+                'valid'  => true,
+                'scopes' => $tokenFromCache['scopes']
+            ];
         }
 
-        $this->grant = $grant;
+        // TODO:
+        // If we want to implement a check to api-service-users, we should
+        // add an option to bypass the cache and send a hard request to
+        // the backend (in case a user doesn't trust the cache). That
+        // route should be severely rate-limited, e.g., 1-2 requests per day.
+        // A token should last 15 days so that is more than acceptable.
 
-        return $grant;
-    }
-
-    public function getGrant()
-    {
-        if (is_null($this->grant)) {
-            return "Error.. You must run the lookup() method first.";
-        }
-
-        return json_decode($this->grant, true);
+        return false;
     }
 }
+
