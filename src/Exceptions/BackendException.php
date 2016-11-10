@@ -2,9 +2,9 @@
 
 namespace Revolve\Microservice\Exceptions;
 
-use Symfony\Component\HttpKernel\Exception\RuntimeException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class BackendException extends RuntimeException
+class BackendException extends HttpException
 {
     private $statusCode;
 
