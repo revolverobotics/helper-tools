@@ -13,8 +13,6 @@ class BaseUnitTestController extends CustomController
 
     public function postPreTest()
     {
-        $this->verifyTestKey();
-
         $this->runCustomChecks();
 
         $this->makeResponse([], 'Pre-test finished.');
@@ -38,8 +36,6 @@ class BaseUnitTestController extends CustomController
 
     public function postCleanup()
     {
-        $this->verifyTestKey();
-
         $this->performCleanupOperations();
 
         $this->makeResponse([], 'Cleanup finished.');

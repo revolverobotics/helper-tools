@@ -115,26 +115,6 @@ class BackendRequest
     }
 
     /**
-     * Gets the correct url extension based on our app environment
-     *
-     * @return void
-     */
-    protected function detectEnvironment()
-    {
-        $env = app()->environment();
-
-        if (!is_null(env('VPC_EXTENSION', null))) {
-            return env('VPC_EXTENSION');
-        }
-
-        if ($env == 'production') {
-            return 'com';
-        }
-
-        return 'stage';
-    }
-
-    /**
      * Set the baseUrl
      *
      * @param string $service
@@ -142,9 +122,16 @@ class BackendRequest
      */
     public function setBaseUrl(string $service)
     {
+        if (is_null(config('app.vpc_extension'))) {
+            throw new \Exception(
+                'VPC_EXTENSION must be set and added to config/app.php '.
+                'as app.vpc_extension'
+            );
+        }
+
         $this->baseUrl = $service.'.'.
                          static::MICROSERVICE_DOMAIN.'.'.
-                         $this->detectEnvironment();
+                         config('app.vpc_extension');
     }
 
     /**
@@ -154,7 +141,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function get(string $path, array $queryData)
+    public function get(string $path, array $queryData, $headers = null)
     {
         $this->method = 'GET';
 
@@ -168,7 +155,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function post(string $path, array $queryData)
+    public function post(string $path, array $queryData, $headers = null)
     {
         $this->method = 'POST';
 
@@ -182,7 +169,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function put(string $path, array $queryData)
+    public function put(string $path, array $queryData, $headers = null)
     {
         $this->method = 'PUT';
 
@@ -196,7 +183,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function patch(string $path, array $queryData)
+    public function patch(string $path, array $queryData, $headers = null)
     {
         $this->method = 'PATCH';
 
@@ -210,7 +197,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function delete(string $path, array $queryData)
+    public function delete(string $path, array $queryData, $headers = null)
     {
         $this->method = 'DELETE';
 
@@ -224,7 +211,7 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function any(string $path, array $queryData, string $method)
+    public function any(string $path, array $queryData, string $method, $headers = null)
     {
         $this->method = $method;
 
@@ -236,9 +223,9 @@ class BackendRequest
      *
      * @return array
      */
-    protected function send(string $path, array $queryData)
+    protected function send(string $path, array $queryData, $headers = null)
     {
-        $this->setRequestHeaders();
+        $this->setRequestHeaders($headers);
 
         $this->setPayloadData($queryData);
 
@@ -269,7 +256,7 @@ class BackendRequest
      *
      * @return void
      */
-    protected function setRequestHeaders()
+    protected function setRequestHeaders($headers)
     {
         $this->requestHeaders = app()->request->header();
 
@@ -278,7 +265,14 @@ class BackendRequest
         unset($this->requestHeaders['content-type']);
         unset($this->requestHeaders['content-length']);
 
-        $this->payload['headers'] = $this->requestHeaders;
+        if (is_null($headers)) {
+            $headers = [];
+        }
+
+        $this->payload['headers'] = array_merge(
+            $this->requestHeaders,
+            $headers
+        );
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Revolve\Microservice\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
+use Revolve\Microservice\Exceptions\BackendException;
 use Illuminate\Foundation\Http\Exceptions\MaintenanceModeException;;
 
 class CheckForMaintenanceMode
@@ -40,7 +41,7 @@ class CheckForMaintenanceMode
         if ($this->app->isDownForMaintenance()
             && $this->app->environment() != 'testing'
         ) {
-            throw new HttpException(
+            throw new BackendException(
                 503,
                 'Server is currently undergoing maintenance. We should be '
                     .'back up shortly.'

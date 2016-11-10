@@ -4,26 +4,6 @@ namespace Revolve\Microservice\Traits;
 
 trait BaseUnitTestTrait
 {
-    protected $testVariables;
-
-    protected function verifyTestKey()
-    {
-        if (!$this->rq->has('test_key')) {
-            throw new \BadRequestHttpException('[test_key] must be provided.');
-        }
-
-        $inputTestKey = $this->rq->input('test_key', str_random(32));
-        $envTestKey = env('TEST_KEY', str_random(32));
-
-        if (is_null(env('TEST_KEY', null))
-            || $inputTestKey != $envTestKey
-        ) {
-            throw new \FatalErrorException(
-                'Provided [test_key] is invalid.'
-            );
-        }
-    }
-
     protected function runCustomChecks()
     {
         // Add any microservice-specific pre-test checks in
