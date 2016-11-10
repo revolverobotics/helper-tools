@@ -3,35 +3,37 @@
 namespace Revolve\Microservice\Backend;
 
 use Cache;
+use Illuminate\Auth\AuthenticationException;
 
 /**
- * Takes a user or client token as input and retrieves the associated
- * user_id or client_id.
+ * Class for interacting with our backend OAuth 2 server.
  *
- * For backend services to check with api-service-users the access/scope
- * of a user/client token.
+ * @package tools-laravel-microservice
+ * @author  Timothy Huang
  */
 class BackendAuthorizer
 {
     /**
-     * Authenticates a token and returns a list of associated scopes
+     * Validates a token via Cache and returns a set of scopes if true
      *
      * @param  string   $token
-     *
      * @return boolean  Returns true if token is valid
      */
-    public function validateToken($token)
+    public function validateTokenFromCache($token)
     {
         $tokenFromCache = Cache::tags(['tokens'])->get($token);
 
-        if (!is_null($tokenFromCache) &&
+        if (config('app.debug')) {
+            \Log::debug('$token (lookup): '.$token);
+            \Log::debug('$tokenFromCache: '.$tokenFromCache);
+        }
+
+        if (
+            !is_null($tokenFromCache) &&
             $token == $tokenFromCache['access_token'] &&
             $tokenFromCache['expires_at'] > time()
         ) {
-            return [
-                'valid'  => true,
-                'scopes' => $tokenFromCache['scopes']
-            ];
+            return ['scopes' => $tokenFromCache['scopes']];
         }
 
         // TODO:
@@ -41,7 +43,9 @@ class BackendAuthorizer
         // route should be severely rate-limited, e.g., 1-2 requests per day.
         // A token should last 15 days so that is more than acceptable.
 
-        return false;
+        throw new AuthenticationException(
+            'The token is invalid or cannot be found in Cache.'
+        );
     }
 }
 
