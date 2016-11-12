@@ -24,8 +24,10 @@ class BackendAuthorizer
         $tokenFromCache = Cache::tags(['tokens'])->get($token);
 
         if (config('app.debug')) {
+            print_r($tokenFromCache);
             \Log::debug('$token (lookup): '.$token);
-            \Log::debug('$tokenFromCache: '.$tokenFromCache);
+            \Log::debug('$tokenFromCache:');
+            \Log::debug($tokenFromCache);
         }
 
         if (
@@ -33,7 +35,7 @@ class BackendAuthorizer
             $token == $tokenFromCache['access_token'] &&
             $tokenFromCache['expires_at'] > time()
         ) {
-            return ['scopes' => $tokenFromCache['scopes']];
+            return ['scopes' => implode(' ', $tokenFromCache['token']['scopes'])];
         }
 
         // TODO:
