@@ -25,17 +25,15 @@ class BackendAuthorizer
 
         if (config('app.debug')) {
             print_r($tokenFromCache);
-            \Log::debug('$token (lookup): '.$token);
-            \Log::debug('$tokenFromCache:');
-            \Log::debug($tokenFromCache);
         }
 
-        if (
-            !is_null($tokenFromCache) &&
-            $token == $tokenFromCache['access_token'] &&
-            $tokenFromCache['expires_at'] > time()
-        ) {
-            return ['scopes' => implode(' ', $tokenFromCache['token']['scopes'])];
+        $exists = !is_null($tokenFromCache);
+        $isEqual = $token == $tokenFromCache['access_token'];
+        $isRevoked = $tokenFromCache['tokenObject']['revoked'] == 1;
+        $isExpired = strtotime($tokenFromCache['tokenObject']['expires_at']) < time();
+
+        if ($exists && $isEqual && !$isExpired && !$isRevoked) {
+            return ['scopes' => implode(' ', $tokenFromCache['tokenObject']['scopes'])];
         }
 
         // TODO:
