@@ -23,17 +23,17 @@ class BackendAuthorizer
     {
         $tokenFromCache = Cache::tags(['tokens'])->get($token);
 
-        if (config('app.debug')) {
-            print_r($tokenFromCache);
-        }
-
         $exists = !is_null($tokenFromCache);
         $isEqual = $token == $tokenFromCache['access_token'];
         $isRevoked = $tokenFromCache['tokenObject']['revoked'] == 1;
         $isExpired = strtotime($tokenFromCache['tokenObject']['expires_at']) < time();
 
         if ($exists && $isEqual && !$isExpired && !$isRevoked) {
-            return ['scopes' => implode(' ', $tokenFromCache['tokenObject']['scopes'])];
+            unset($tokenFromCache['tokenObject']['user_id']);
+            unset($tokenFromCache['tokenObject']['client_id']);
+            unset($tokenFromCache['tokenObject']['updated_at']);
+
+            return $tokenFromCache['tokenObject'];
         }
 
         // TODO:
