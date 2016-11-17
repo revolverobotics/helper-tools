@@ -79,6 +79,13 @@ class BackendRequest
     protected $code;
 
     /**
+     * Whether or not to throw an exception if an error code was returned
+     *
+     * @var boolean
+     */
+    protected $httpErrors = true;
+
+    /**
      * Domain at which our microservices live
      *
      * @var string
@@ -98,6 +105,17 @@ class BackendRequest
 
         $this->setBaseUrl($service);
     }
+
+
+    /**
+     * Tell this class not to throw an exception if an http error code was received
+     *
+     */
+    public function dontThrowErrors()
+    {
+        $this->httpErrors = false;
+    }
+
 
     /**
      * Ensures that we're attempting to reach a valid microservice
@@ -241,7 +259,7 @@ class BackendRequest
         $this->response = json_decode($rawResponse->getBody(), true);
         $this->code = $rawResponse->getStatusCode();
 
-        if ($this->code != 200) {
+        if ($this->code != 200 && $this->httpErrors) {
             throw new BackendException(
                 $this->code,
                 json_encode($this->response)
