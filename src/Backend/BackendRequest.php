@@ -159,11 +159,11 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function get(string $path, array $queryData, $headers = null)
+    public function get(string $path, array $queryData = [], $headers = null)
     {
         $this->method = 'GET';
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -173,11 +173,11 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function post(string $path, array $queryData, $headers = null)
+    public function post(string $path, array $queryData = [], $headers = null)
     {
         $this->method = 'POST';
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -187,11 +187,11 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function put(string $path, array $queryData, $headers = null)
+    public function put(string $path, array $queryData = [], $headers = null)
     {
         $this->method = 'PUT';
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -201,11 +201,11 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function patch(string $path, array $queryData, $headers = null)
+    public function patch(string $path, array $queryData = [], $headers = null)
     {
         $this->method = 'PATCH';
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -215,11 +215,11 @@ class BackendRequest
      * @param array $queryData
      * @return array
      */
-    public function delete(string $path, array $queryData, $headers = null)
+    public function delete(string $path, array $queryData = [], $headers = null)
     {
         $this->method = 'DELETE';
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -233,7 +233,7 @@ class BackendRequest
     {
         $this->method = $method;
 
-        return $this->send($path, $queryData);
+        return $this->send($path, $queryData, $headers);
     }
 
     /**
@@ -241,7 +241,7 @@ class BackendRequest
      *
      * @return array
      */
-    protected function send(string $path, array $queryData, $headers = null)
+    protected function send(string $path, array $queryData = [], $headers = null)
     {
         $this->setRequestHeaders($headers);
 
