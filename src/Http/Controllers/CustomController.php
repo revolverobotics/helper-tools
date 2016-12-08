@@ -17,16 +17,9 @@ abstract class CustomController extends BaseController
         DispatchesJobs,
         RequestValidatorTrait;
 
-    protected $rq;
-
     protected $rsp;
 
     protected $backendResponse;
-
-    public function __construct()
-    {
-        $this->rq = request();
-    }
 
     protected function success()
     {
@@ -46,7 +39,7 @@ abstract class CustomController extends BaseController
 
         if (config('app.debug')) {
             $data[$this->appName()] = 'debug';
-            $data['url'] = $this->rq->fullUrl();
+            $data['url'] = request()->fullUrl();
             $data['SQL Queries'] = count(DB::getQueryLog());
             $data['response_time'] = microtime(true) - LARAVEL_START;
         }

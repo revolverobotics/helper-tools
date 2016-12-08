@@ -31,11 +31,7 @@ trait RequestValidatorTrait
      */
     public function validate(array $rules, array $messages = [], array $customAttributes = [])
     {
-        if ($this->rq instanceof \Illuminate\Http\Request) {
-            $this->request = $this->rq;
-        }
-
-        $validator = $this->getValidationFactory()->make($this->request->all(), $rules, $messages, $customAttributes);
+        $validator = $this->getValidationFactory()->make(request()->all(), $rules, $messages, $customAttributes);
 
         if ($validator->fails()) {
             throw new \BadRequestHttpException(implode(" ", $validator->errors()->all()));
