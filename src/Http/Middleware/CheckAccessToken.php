@@ -5,6 +5,7 @@ namespace Revolve\Microservice\Http\Middleware;
 use Cache;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
+use Revolve\Microservice\Backend\BackendRequest;
 
 /**
  * Middleware for checking the validity of an access token via cache,
@@ -47,32 +48,23 @@ class CheckAccessToken
         if ($exists && $isEqual && !$isExpired && !$isRevoked) {
             //
             // If token exists in cache and is valid, continue with the request
-
-            print_r($tokenFromCache);
-            \Log::debug($tokenFromCache);
-
-            $tokenData = $tokenFromCache;
+            $tokenData = $tokenFromCache['tokenObject'];
         } else {
             //
             // Otherwise, let's make a hard request to api-service-users
-            $request  = new BackendRequest('users');
+            $rq = new BackendRequest('users');
+            $rq->dontThrowErrors();
 
-            $request->post(
-                'oauth/verify',
-                [],
-                ['Authorization' => 'Bearer '.$token]
-            );
+            // $auth = ['Authorization' => request()->header('Authorization')];
+            // Authorization header is automatically passed through.
 
-            $response = $request->getResponse();
+            $rq->post('oauth/verify', []);
 
-            print_r($response);
-            \Log::debug($response);
-
-            if ($request->code() != 200) {
+            if ($rq->code() != 200) {
                 throw new AuthenticationException('Invalid access token.');
             }
 
-            $tokenData = $response['token'];
+            $tokenData = $rq->getResponse()['token'];
         }
 
         app()->singleton('OAuthAccessToken', function ($app) use ($tokenData) {
