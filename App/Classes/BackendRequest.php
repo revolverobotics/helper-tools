@@ -278,10 +278,6 @@ class BackendRequest
         unset($this->requestHeaders['content-type']);
         unset($this->requestHeaders['content-length']);
 
-        if ($this->method == 'POST') {
-            $this->requestHeaders['content-type'][0] = 'multipart/form-data';
-        }
-
         $this->payload['headers'] = $this->requestHeaders;
     }
 
@@ -295,17 +291,14 @@ class BackendRequest
     protected function setPayloadData(array $queryData)
     {
         if ($this->method == 'POST') {
-            $dataWrapper = 'multipart';
-
-            $this->payload[$dataWrapper] = [];
+            $this->payload['multipart'] = [];
 
             foreach ($queryData as $key => $value) {
-                array_push($this->payload[$dataWrapper], [
+                array_push($this->payload['multipart'], [
                     'name'     => $key,
                     'contents' => $value
                 ]);
             }
-
         } else {
             if ($this->method == 'GET') {
                 $dataWrapper = 'query';
