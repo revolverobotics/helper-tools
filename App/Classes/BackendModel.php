@@ -123,6 +123,15 @@ abstract class BackendModel implements ArrayAccess
         ];
     }
 
+    public function post(array $data)
+    {
+        $this->modelData = $this->pipe('post', $this->modelName, $data);
+
+        return [
+            $this->datasetPlural => $this->modelData[$this->datasetPlural]
+        ];
+    }
+
     /**
      * Determine if the given attribute exists.
      *
