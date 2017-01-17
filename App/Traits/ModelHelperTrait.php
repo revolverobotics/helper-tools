@@ -56,6 +56,8 @@ trait ModelHelperTrait
 
         if ($pagination > 0) {
             $result = $model->paginate($pagination);
+        } else {
+            $result = $model->get();
         }
 
         $this->magicResult = $result;
