@@ -293,7 +293,13 @@ class BackendRequest
         if ($this->method == 'POST') {
             $this->payload['multipart'] = [];
 
-            foreach ($queryData as $key => $value) {
+            foreach ($queryData as $key => &$value) {
+                if (gettype($value) == 'object'
+                    && get_class($value) == 'Symfony\Component\HttpFoundation\File\UploadedFile'
+                ) {
+                    $value = fopen($value, 'r');
+                }
+
                 array_push($this->payload['multipart'], [
                     'name'     => $key,
                     'contents' => $value
