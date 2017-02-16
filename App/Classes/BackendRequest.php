@@ -83,7 +83,7 @@ class BackendRequest
      *
      * @var string
      */
-    const MICROSERVICE_DOMAIN = 'kubi-vpc';
+    const MICROSERVICE_DOMAIN = 'kubi';
 
     /**
      * Instantiate the client
@@ -121,17 +121,11 @@ class BackendRequest
      */
     protected function detectEnvironment()
     {
-        $env = app()->environment();
-
-        if (!is_null(env('VPC_EXTENSION', null))) {
-            return env('VPC_EXTENSION');
+        if (app()->environment() == 'production') {
+            return 'vpc';
+        } else {
+            return 'dev';
         }
-
-        if ($env == 'production') {
-            return 'com';
-        }
-
-        return 'stage';
     }
 
     /**
