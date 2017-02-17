@@ -14,15 +14,15 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $statusCodes = [
-        'BadRequestHttpException'           => 400,
-        'FatalErrorException'               => 500,
-        'MethodNotAllowedHttpException'     => 405,
-        'ModelNotFoundException'            => 404,
-        'NotFoundHttpException'             => 404,
-        'NotReadableException'              => 400,
-        'TooManyRequestsHttpException'      => 408,
-        'UnauthorizedHttpException'         => 401,
+        'HttpException'                     => 500,
         'ValidationException'               => 400,
+        'NotReadableException'              => 400,
+        'NotFoundHttpException'             => 404,
+        'ModelNotFoundException'            => 404,
+        'BadRequestHttpException'           => 400,
+        'UnauthorizedHttpException'         => 401,
+        'TooManyRequestsHttpException'      => 408,
+        'MethodNotAllowedHttpException'     => 405,
     ];
     // Intervention\Image\Exception\NotReadableException
     // Left this out:

@@ -12,7 +12,7 @@ trait BaseUnitTestTrait
 
     protected function performCleanupOperations()
     {
-        throw new \FatalErrorException(
+        throw new \BadRequestHttpException(
             "Each microservice will have a different set of cleanup ops.\n".
             "Extend the BaseUnitTestController and create a service-specific\n".
             "UnitTestTrait if necessary."

@@ -47,5 +47,9 @@ class BackendAuthorizer
             'The token is invalid or cannot be found in Cache.'
         );
     }
-}
 
+    public function validateTokenFromBackend($token)
+    {
+        //
+    }
+}

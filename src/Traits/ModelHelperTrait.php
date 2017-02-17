@@ -20,13 +20,13 @@ trait ModelHelperTrait
      * @param  int $pagination
      * @return Illuminate\Pagination\LengthAwarePaginator
      *
-     * @throws Psy\Exception\FatalErrorException;
      * @throws Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @throws Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException
      */
     public function magicSearch(array $input, $pagination = 5)
     {
         if (is_null($this->queryable)) {
-            throw new \FatalErrorException(
+            throw new \BadRequestHttpException(
                 'Please specify columns available '.
                 'for Magic Search in Model::$queryable.'
             );
@@ -39,7 +39,7 @@ trait ModelHelperTrait
         );
 
         if (count($searchKeys) < 1) {
-            throw new \BadRequestHttpException(
+            throw new \NotAcceptableHttpException(
                 'No input keys matched any searchable columns/fields.'
             );
         }

@@ -59,7 +59,7 @@ abstract class BackendModel implements ArrayAccess
             is_null($this->modelName) ||
             is_null($this->datasetPlural)
         ) {
-            throw new \FatalErrorException(
+            throw new \NotAcceptableHttpException(
                 'Model instantiation must provide $service, '.
                 '$modelName, and $datasetPlural.'
             );
