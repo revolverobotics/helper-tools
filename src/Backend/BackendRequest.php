@@ -90,7 +90,7 @@ class BackendRequest
      *
      * @var string
      */
-    const MICROSERVICE_DOMAIN = 'kubi-vpc';
+    const MICROSERVICE_DOMAIN = 'kubi';
 
     /**
      * Instantiate the client
@@ -140,16 +140,15 @@ class BackendRequest
      */
     public function setBaseUrl(string $service)
     {
-        if (is_null(config('app.vpc_extension'))) {
-            throw new \Exception(
-                'VPC_EXTENSION must be set and added to config/app.php '.
-                'as app.vpc_extension'
-            );
+        if (str_contains(gethostname(), '.local')) {
+            $extension = '.dev';
+        } elseif (gethostname() == 'ip-10-0-0-14') {
+            $extension = '.stage';
+        } else {
+            $extension = '.vpc';
         }
 
-        $this->baseUrl = $service.'.'.
-                         static::MICROSERVICE_DOMAIN.'.'.
-                         config('app.vpc_extension');
+        $this->baseUrl = 'https://api.kubi'.$extension;
     }
 
     /**
@@ -243,72 +242,34 @@ class BackendRequest
      */
     protected function send(string $path, array $queryData = [], $headers = null)
     {
-        $this->setRequestHeaders($headers);
+        $payload = [];
 
-        $this->setPayloadData($queryData);
+        if ($method == 'POST') {
+            $payload['multipart'] = [];
 
-        $this->payload['http_errors'] = false;
-        // don't fail on error (400, 500, etc.)
+            foreach ($input as $key => $value) {
+                $param = ['name' => $key, 'contents' => $value];
+                array_push($payload['multipart'], $param);
+            }
+        } else {
+            $dataWrapper = ($method == 'GET' ? 'query' : 'form_params');
+            $payload[$dataWrapper] = $input;
+        }
 
-        $rawResponse = $this->client->request(
-            $this->method,
-            'http://'.$this->baseUrl.'/'.$path,
-            $this->payload
-        );
+        $payload['headers'] = $headers;
+        $payload['http_errors'] = $this->httpErrors;
 
-        $this->response = json_decode($rawResponse->getBody(), true);
-        $this->code = $rawResponse->getStatusCode();
+        $url      = $this->baseUrl.'/'.$path;
+        $response = $this->client->request($this->method, $url, $payload);
+
+        $this->code     = $response->getStatusCode();
+        $this->response = $response->getBody();
 
         if ($this->code != 200 && $this->httpErrors) {
-            throw new BackendException(
-                $this->code,
-                json_encode($this->response)
-            );
+            throw new BackendException($this->code, json_encode($this->response));
         }
 
         return $this->response;
-    }
-
-    /**
-     * Set the headers for our backend request
-     *
-     * @return void
-     */
-    protected function setRequestHeaders($headers)
-    {
-        $this->requestHeaders = app()->request->header();
-
-        $this->requestHeaders['host'][0] = $this->baseUrl;
-        $this->requestHeaders['connection'][0] = 'close';
-        unset($this->requestHeaders['content-type']);
-        unset($this->requestHeaders['content-length']);
-
-        if (is_null($headers)) {
-            $headers = [];
-        }
-
-        $this->payload['headers'] = array_merge(
-            $this->requestHeaders,
-            $headers
-        );
-    }
-
-    /**
-     * GET and non-GET (POST, PUT, PATCH, etc.) requests
-     * require different keys for the $payload
-     *
-     * @param array $queryData
-     * @return void
-     */
-    protected function setPayloadData(array $queryData)
-    {
-        if ($this->method == 'GET') {
-            $dataWrapper = 'query';
-        } else {
-            $dataWrapper = 'form_params';
-        }
-
-        $this->payload[$dataWrapper] = $queryData;
     }
 
     /**
