@@ -121,10 +121,10 @@ class BackendRequest
      */
     protected function detectEnvironment()
     {
-        if (app()->environment() == 'production') {
-            return 'vpc';
-        } else {
+        if (str_contains(gethostname(), '.local')) {
             return 'dev';
+        } else {
+            return 'vpc';
         }
     }
 
