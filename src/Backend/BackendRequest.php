@@ -258,16 +258,15 @@ class BackendRequest
 
         $payload['headers'] = $this->setRequestHeaders($headers);
         $payload['http_errors'] = $this->httpErrors;
-// print_r($payload);
+
         $url      = $this->baseUrl.'/'.$path;
-        // echo "\nHitting {$url}\n";
         $response = $this->client->request($this->method, $url, $payload);
 
         $this->code     = $response->getStatusCode();
         $this->response = json_decode($response->getBody()->getContents(), true);
 
-        if ($this->code != 200 && $this->httpErrors) {
-            throw new BackendException($this->code, $this->response);
+        if ($this->code != 200) {
+            throw new BackendException($this->code, json_encode($this->response));
         }
 
         return $this->response;

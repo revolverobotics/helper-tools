@@ -3,7 +3,7 @@
 namespace Revolve\Microservice\Backend;
 
 use ArrayAccess;
-use BackendRequest;
+use Revolve\Microservice\Backend\BackendRequest;
 
 /*
     Provides a base interface for retrieving and updating models from

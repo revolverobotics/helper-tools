@@ -15,6 +15,6 @@ class BackendException extends HttpException
     ) {
         $this->statusCode = $statusCode;
 
-        parent::__construct($message, $this->statusCode, $previous);
+        parent::__construct($this->statusCode, $message, $previous);
     }
 }
