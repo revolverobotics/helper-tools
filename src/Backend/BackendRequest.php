@@ -83,7 +83,7 @@ class BackendRequest
      *
      * @var boolean
      */
-    protected $httpErrors = true;
+    protected $httpErrors = false;
 
     /**
      * Domain at which our microservices live
@@ -141,14 +141,14 @@ class BackendRequest
     public function setBaseUrl(string $service)
     {
         if (str_contains(gethostname(), '.local')) {
-            $extension = '.dev';
+            $extension = 'dev';
         } elseif (gethostname() == 'ip-10-0-0-14') {
-            $extension = '.stage';
+            $extension = 'stage';
         } else {
-            $extension = '.vpc';
+            $extension = 'vpc';
         }
 
-        $this->baseUrl = 'https://api.kubi'.$extension;
+        $this->baseUrl = "http://{$service}.kubi.{$extension}";
     }
 
     /**
@@ -240,11 +240,11 @@ class BackendRequest
      *
      * @return array
      */
-    protected function send(string $path, array $queryData = [], $headers = null)
+    protected function send(string $path, array $input = [], $headers = null)
     {
         $payload = [];
 
-        if ($method == 'POST') {
+        if ($this->method == 'POST') {
             $payload['multipart'] = [];
 
             foreach ($input as $key => $value) {
@@ -252,24 +252,47 @@ class BackendRequest
                 array_push($payload['multipart'], $param);
             }
         } else {
-            $dataWrapper = ($method == 'GET' ? 'query' : 'form_params');
+            $dataWrapper = ($this->method == 'GET' ? 'query' : 'form_params');
             $payload[$dataWrapper] = $input;
         }
 
-        $payload['headers'] = $headers;
+        $payload['headers'] = $this->setRequestHeaders($headers);
         $payload['http_errors'] = $this->httpErrors;
-
+// print_r($payload);
         $url      = $this->baseUrl.'/'.$path;
+        // echo "\nHitting {$url}\n";
         $response = $this->client->request($this->method, $url, $payload);
 
         $this->code     = $response->getStatusCode();
-        $this->response = $response->getBody();
+        $this->response = json_decode($response->getBody()->getContents(), true);
 
         if ($this->code != 200 && $this->httpErrors) {
-            throw new BackendException($this->code, json_encode($this->response));
+            throw new BackendException($this->code, $this->response);
         }
 
         return $this->response;
+    }
+
+    /**
+     * Set the headers for our backend request
+     *
+     * @return void
+     */
+    protected function setRequestHeaders($headers)
+    {
+        $this->requestHeaders = app()->request->header();
+
+        unset($this->requestHeaders['content-type']);
+        unset($this->requestHeaders['content-length']);
+
+        $this->requestHeaders['host'][0] = str_replace('http://', '', $this->baseUrl);
+        // $this->requestHeaders['connection'][0] = 'close';
+
+        if (is_null($headers)) {
+            $headers = [];
+        }
+
+        return array_merge($this->requestHeaders, $headers);
     }
 
     /**
